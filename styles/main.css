@@ -1,3 +1,60 @@
+/* 1. Use a more-intuitive box-sizing model */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* 2. Remove default margin */
+*:not(dialog) {
+  margin: 0;
+}
+
+/* 3. Enable keyword animations */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    interpolate-size: allow-keywords;
+  }
+}
+
+body {
+  /* 4. Increase line-height */
+  line-height: 1.5;
+  /* 5. Improve text rendering */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 6. Improve media defaults */
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* 7. Inherit fonts for form controls */
+input, button, textarea, select {
+  font: inherit;
+}
+
+/* 8. Avoid text overflows */
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+
+/* 9. Improve line wrapping */
+p {
+  text-wrap: pretty;
+}
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+}
+
+/*
+  10. Create a root stacking context
+*/
+#root, #__next {
+  isolation: isolate;
+}
+
+
+
 html,
 body,
 #app {
@@ -5,20 +62,13 @@ body,
 }
 
 body {
-    margin: 0;
     font-family: sans-serif;
-    line-height: 1.5;
-    background: #ffffff;
-    color: #1f1f1f;
+    background: var(--page-bg);
+    color: var(--text-color);
 }
 
 a {
-    color: #0b57d0;
-}
-
-button,
-input {
-    font: inherit;
+    color: var(--link-color);
 }
 
 button {
@@ -31,13 +81,8 @@ button {
     margin: 0 auto;
     padding: 24px 16px 24px;
     display: flex;
-    box-sizing: border-box;
     flex-direction: column;
     align-items: center;
-}
-
-.page-header h1 {
-    margin-top: 0;
 }
 
 .catalog-list,
@@ -48,8 +93,8 @@ button {
 
 .catalog-item,
 .widget-shell {
-    background: #ffffff;
-    border: 1px solid #d7d7d7;
+    background: var(--surface-bg);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 16px;
 }
@@ -63,7 +108,6 @@ button {
 .choice-list {
     list-style: none;
     padding-left: 0;
-    margin: 0;
 }
 
 .catalog-item,
@@ -96,13 +140,44 @@ button {
     display: flex;
     gap: 12px;
     width: min(100%, var(--interactive-width, 78%));
-    margin-top: auto;
     padding-top: 24px;
 }
 
 .lesson-actions button {
     flex: 1 1 0;
     min-height: 48px;
+    border: 0;
+    border-radius: var(--button-radius);
+    background: var(--button-bg);
+    color: var(--button-text);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 4px 0 #000000;
+    transform: translateY(0);
+    transition:
+        transform 120ms ease,
+        box-shadow 120ms ease,
+        filter 120ms ease;
+}
+
+.lesson-actions button:hover {
+    filter: brightness(1.04);
+}
+
+.lesson-actions button:active {
+    transform: translateY(3px);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 1px 0 #000000;
+}
+
+.lesson-actions button:disabled {
+    cursor: not-allowed;
+    filter: saturate(0.65) brightness(0.92);
+    transform: translateY(3px);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.04),
+        0 1px 0 #000000;
 }
 
 .feedback-message {
@@ -110,11 +185,11 @@ button {
 }
 
 .feedback-success {
-    color: #0a6c2f;
+    color: var(--success-color);
 }
 
 .feedback-error {
-    color: #9a1b1b;
+    color: var(--error-color);
 }
 
 .widget-controls label {
@@ -130,16 +205,35 @@ button {
 :root {
     --interactive-width: 70%;
     --progress-node-size: 12px;
+    --page-bg: #ffffff;
+    --surface-bg: #ffffff;
+    --text-color: #1f1f1f;
+    --muted-text-color: #666666;
+    --link-color: #0b57d0;
+    --border-color: #d7d7d7;
+    --border-color-strong: #b7b7b7;
+    --shadow-color: rgba(31, 31, 31, 0.08);
+    --button-bg: #303030;
+    --button-text: #ffffff;
+    --button-radius: 8px;
+    --success-color: #0a6c2f;
+    --error-color: #9a1b1b;
     --progress-color: #0884d7;
-    --progress-color-soft: rgba(31, 92, 92, 0.16);
+    --progress-color-soft: rgba(8, 132, 215, 0.16);
 }
 
 .lesson-shell {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 12px 16px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     flex: 1 1 auto;
     width: 100%;
     min-height: 0;
     height: auto;
-    padding-top: 12px;
+    justify-content: space-between;
 }
 
 .lesson-page {
@@ -152,12 +246,11 @@ button {
 
 .lesson-nav {
     width: 100%;
-    box-shadow: 0 8px 24px rgba(31, 31, 31, 0.08);
+    box-shadow: 0 8px 24px var(--shadow-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 16px 16px;
-    box-sizing: border-box;
     min-height: 44px;
 }
 
@@ -213,9 +306,8 @@ button {
     width: var(--progress-node-size);
     height: var(--progress-node-size);
     border-radius: 999px;
-    background: #ffffff;
-    border: 2px solid #b7b7b7;
-    box-sizing: border-box;
+    background: var(--surface-bg);
+    border: 2px solid var(--border-color-strong);
 }
 
 .progress-track-empty,
@@ -229,7 +321,7 @@ button {
 }
 
 .progress-track-empty {
-    background: #d7d7d7;
+    background: var(--border-color);
 }
 
 .progress-track-fill {
@@ -273,7 +365,7 @@ button {
 }
 
 .step-affordance {
-    color: #666666;
+    color: var(--muted-text-color);
     font-size: 0.95rem;
 }
 

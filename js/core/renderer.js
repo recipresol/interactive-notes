@@ -288,10 +288,9 @@ export function renderLessonPage(root, engine) {
     spacer.setAttribute("aria-hidden", "true");
     lessonHeader.append(backLinkWrap, progressWrap, spacer);
 
-    const shell = createElement("main", "app-shell");
-    shell.classList.add("lesson-shell");
+    const shell = createElement("main", "lesson-shell");
 
-    const content = createElement("section", "step-panel minimalist-lesson");
+    const content = createElement("section", "minimalist-lesson");
     const feedbackSlot = createElement("div", "feedback-slot");
 
     const actions = createElement("div", "lesson-actions");
