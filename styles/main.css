@@ -1,0 +1,284 @@
+html,
+body,
+#app {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: sans-serif;
+    line-height: 1.5;
+    background: #ffffff;
+    color: #1f1f1f;
+}
+
+a {
+    color: #0b57d0;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.app-shell {
+    max-width: 880px;
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 24px 16px 24px;
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
+    align-items: center;
+}
+
+.page-header h1 {
+    margin-top: 0;
+}
+
+.catalog-list,
+.choice-list,
+.hint-list {
+    padding-left: 20px;
+}
+
+.catalog-item,
+.widget-shell {
+    background: #ffffff;
+    border: 1px solid #d7d7d7;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.catalog-list {
+    display: grid;
+    gap: 16px;
+}
+
+.catalog-list,
+.choice-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.catalog-item,
+.choice-item + .choice-item {
+    margin-top: 12px;
+}
+
+.choice-label {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.step-body,
+.step-prompt,
+.feedback-message,
+.widget-output,
+.step-affordance {
+    margin: 12px 0 0;
+}
+
+.widget-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
+.lesson-actions {
+    display: flex;
+    gap: 12px;
+    width: min(100%, var(--interactive-width, 78%));
+    margin-top: auto;
+    padding-top: 24px;
+}
+
+.lesson-actions button {
+    flex: 1 1 0;
+    min-height: 48px;
+}
+
+.feedback-message {
+    min-height: 1.5em;
+}
+
+.feedback-success {
+    color: #0a6c2f;
+}
+
+.feedback-error {
+    color: #9a1b1b;
+}
+
+.widget-controls label {
+    display: grid;
+    gap: 4px;
+}
+
+.widget-controls input {
+    width: 120px;
+    padding: 6px 8px;
+}
+
+:root {
+    --interactive-width: 70%;
+    --progress-node-size: 12px;
+    --progress-color: #0884d7;
+    --progress-color-soft: rgba(31, 92, 92, 0.16);
+}
+
+.lesson-shell {
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 0;
+    height: auto;
+    padding-top: 12px;
+}
+
+.lesson-page {
+    width: 100%;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.lesson-nav {
+    width: 100%;
+    box-shadow: 0 8px 24px rgba(31, 31, 31, 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 16px;
+    box-sizing: border-box;
+    min-height: 44px;
+}
+
+.lesson-nav-back {
+    flex: 0 0 40px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.lesson-nav-progress {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
+    min-width: 0;
+    padding: 0 16px;
+    max-width: var(--interactive-width);
+}
+
+.lesson-nav-spacer {
+    flex: 0 0 40px;
+}
+
+.back-link {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    text-decoration: none;
+    line-height: 0;
+}
+
+.back-link-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.progress-bar {
+    width: 100%;
+}
+
+.progress-track {
+    position: relative;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    min-height: calc(var(--progress-node-size) + 8px);
+}
+
+.progress-node {
+    position: relative;
+    z-index: 1;
+    width: var(--progress-node-size);
+    height: var(--progress-node-size);
+    border-radius: 999px;
+    background: #ffffff;
+    border: 2px solid #b7b7b7;
+    box-sizing: border-box;
+}
+
+.progress-track-empty,
+.progress-track-fill {
+    position: absolute;
+    left: calc(var(--progress-node-size) / 2);
+    right: calc(var(--progress-node-size) / 2);
+    height: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.progress-track-empty {
+    background: #d7d7d7;
+}
+
+.progress-track-fill {
+    right: auto;
+    width: 0px;
+    border-radius: 0 5px 5px 0;
+    background: var(--progress-color);
+    transition: width 240ms ease;
+}
+
+.progress-nodes {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.progress-node.is-visited,
+.progress-node.is-complete {
+    background: var(--progress-color);
+    border-color: var(--progress-color);
+}
+
+.progress-node.is-current {
+    border-color: var(--progress-color);
+    box-shadow: 0 0 0 4px var(--progress-color-soft);
+}
+
+.minimalist-lesson {
+    width: min(100%, var(--interactive-width));
+    max-width: 640px;
+    border: 0;
+    padding: 0;
+    overflow: auto;
+}
+
+.text-step {
+    cursor: default;
+}
+
+.step-affordance {
+    color: #666666;
+    font-size: 0.95rem;
+}
+
+@media (max-width: 700px) {
+    :root {
+        --interactive-width: min(100%, 540px);
+    }
+}

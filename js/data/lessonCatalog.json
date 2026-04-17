@@ -1,0 +1,9 @@
+{
+  "lessons": [
+    {
+      "id": "uniform-convergence",
+      "title": "Uniform Convergence: First Intuition",
+      "description": "A small interactive introduction using f_n(x)=x^n on [0,1)."
+    }
+  ]
+}

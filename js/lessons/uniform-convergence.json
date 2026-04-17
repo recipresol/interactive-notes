@@ -1,0 +1,47 @@
+{
+  "id": "uniform-convergence",
+  "title": "Uniform Convergence: First Intuition",
+  "steps": [
+    {
+      "id": "intro",
+      "type": "text",
+      "title": "What is the issue?",
+      "body": "Pointwise convergence lets the threshold depend on x. Uniform convergence asks for one threshold that works everywhere at once."
+    },
+    {
+      "id": "warmup",
+      "type": "multiple_choice",
+      "title": "Warm-up",
+      "prompt": "For f_n(x)=x^n and a fixed x<1, what happens as n grows?",
+      "choices": [
+        "It goes to 1.",
+        "It goes to 0.",
+        "It oscillates."
+      ],
+      "answer": 1,
+      "explanations": [
+        "Not for fixed x strictly less than 1.",
+        "Correct.",
+        "There is no oscillation here."
+      ]
+    },
+    {
+      "id": "explore",
+      "type": "widget",
+      "title": "Try to make one N work",
+      "prompt": "Pick epsilon and N. The widget should help show why points near 1 keep causing trouble.",
+      "widget": "functionSequenceExplorer",
+      "params": {
+        "family": "x^n",
+        "domain": [0, 0.999],
+        "maxN": 50,
+        "initialEpsilon": 0.2,
+        "initialN": 8
+      },
+      "hints": [
+        "Try a smaller epsilon.",
+        "Look near x=1."
+      ]
+    }
+  ]
+}
