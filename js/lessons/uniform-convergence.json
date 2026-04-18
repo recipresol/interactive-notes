@@ -37,11 +37,7 @@
         "maxN": 50,
         "initialEpsilon": 0.2,
         "initialN": 8
-      },
-      "hints": [
-        "Try a smaller epsilon.",
-        "Look near x=1."
-      ]
+      }
     }
   ]
 }

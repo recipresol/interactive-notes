@@ -86,8 +86,7 @@ button {
 }
 
 .catalog-list,
-.choice-list,
-.hint-list {
+.choice-list {
     padding-left: 20px;
 }
 
@@ -110,15 +109,60 @@ button {
     padding-left: 0;
 }
 
-.catalog-item,
-.choice-item + .choice-item {
+.catalog-item {
     margin-top: 12px;
 }
 
+.choice-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    padding: 24px 0;
+}
+
 .choice-label {
+    display: block;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.choice-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.choice-card {
     display: flex;
-    gap: 8px;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 16px;
+    text-align: center;
+    background: #ffffff;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-color);
+    transition:
+        border-color 120ms ease,
+        background-color 120ms ease;
+}
+
+.choice-label:hover .choice-card {
+    border-color: var(--progress-color-soft);
+    background: #fbfdff;
+}
+
+.choice-label:active .choice-card {
+    border-color: var(--progress-color);
+    background: #f9fcff;
+}
+
+.choice-label:hover .choice-card.is-selected,
+.choice-card.is-selected {
+    border-color: var(--progress-color);
+    background: #f9fcff;
 }
 
 .step-body,
@@ -175,8 +219,8 @@ button {
 }
 
 .action-button:hover .action-button-face {
-    filter: brightness(1.04);
-    transform: translateY(-5px);
+    filter: brightness(1.1);
+    transform: translateY(-4px);
 }
 
 .action-button:active .action-button-face {
@@ -226,14 +270,14 @@ button {
     --border-color: #d7d7d7;
     --border-color-strong: #b7b7b7;
     --shadow-color: rgba(31, 31, 31, 0.08);
-    --button-bg: #303030;
-    --button-face-bg: #4a4a4a;
+    --button-bg: #1e1e1e;
+    --button-face-bg: #3f3f3f;
     --button-text: #ffffff;
     --button-radius: 8px;
     --success-color: #0a6c2f;
     --error-color: #9a1b1b;
     --progress-color: #0884d7;
-    --progress-color-soft: rgba(8, 132, 215, 0.16);
+    --progress-color-soft: rgba(8, 132, 215, 0.234);
 }
 
 .lesson-shell {
@@ -363,7 +407,7 @@ button {
 
 .progress-node.is-current {
     border-color: var(--progress-color);
-    box-shadow: 0 0 0 4px var(--progress-color-soft);
+    box-shadow: 0 0 0 3px var(--progress-color-soft);
 }
 
 .minimalist-lesson {
@@ -386,5 +430,9 @@ button {
 @media (max-width: 700px) {
     :root {
         --interactive-width: min(100%, 540px);
+    }
+
+    .choice-list {
+        grid-template-columns: 1fr;
     }
 }

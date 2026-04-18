@@ -123,16 +123,22 @@ function renderMultipleChoiceStep(step, engine, rerender) {
         const item = createElement("li", "choice-item");
         const label = createElement("label", "choice-label");
         const input = document.createElement("input");
+        const text = createElement("span", "choice-card", choice);
         input.type = "radio";
         input.name = `choice-${step.id}`;
         input.value = String(index);
+        input.className = "choice-input";
         input.checked = selectedAnswer === index;
         input.addEventListener("change", () => {
             engine.setSelectedAnswer(step.id, index);
             rerender();
         });
 
-        label.append(input, document.createTextNode(choice));
+        if (selectedAnswer === index) {
+            text.classList.add("is-selected");
+        }
+
+        label.append(input, text);
         item.appendChild(label);
         list.appendChild(item);
     });
@@ -159,27 +165,10 @@ function renderMultipleChoiceStep(step, engine, rerender) {
     return { body: wrapper, mount: null };
 }
 
-function renderHints(step) {
-    if (!Array.isArray(step.hints) || step.hints.length === 0) {
-        return null;
-    }
-
-    const hintTitle = createElement("p", null, "Hints");
-    const hintList = createElement("ul", "hint-list");
-    for (const hint of step.hints) {
-        hintList.appendChild(createElement("li", null, hint));
-    }
-
-    const wrapper = document.createElement("div");
-    wrapper.append(hintTitle, hintList);
-    return wrapper;
-}
-
 function renderWidgetStep(step, engine, rerender) {
     const wrapper = document.createElement("div");
     const prompt = createElement("p", "step-prompt", step.prompt);
     const widgetShell = createElement("div", "widget-shell");
-    const hints = renderHints(step);
     let widgetInstance = null;
 
     function onStateChange(nextState) {
@@ -210,9 +199,6 @@ function renderWidgetStep(step, engine, rerender) {
     }
 
     wrapper.append(prompt, widgetShell);
-    if (hints) {
-        wrapper.appendChild(hints);
-    }
 
     return {
         body: wrapper,
