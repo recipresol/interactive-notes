@@ -18,6 +18,17 @@ function createElement(tagName, className, textContent) {
     return element;
 }
 
+function createActionButton(label) {
+    const button = createElement("button", "action-button");
+    button.type = "button";
+    button.setAttribute("aria-label", label);
+
+    const face = createElement("span", "action-button-face", label);
+    button.appendChild(face);
+
+    return button;
+}
+
 function createHomeLink() {
     const link = document.createElement("a");
     link.className = "back-link";
@@ -294,16 +305,14 @@ export function renderLessonPage(root, engine) {
     const feedbackSlot = createElement("div", "feedback-slot");
 
     const actions = createElement("div", "lesson-actions");
-    const backButton = createElement("button", null, "Back");
-    backButton.type = "button";
+    const backButton = createActionButton("Back");
     backButton.addEventListener("click", () => {
         if (engine.goBack()) {
             updateView();
         }
     });
 
-    const nextButton = createElement("button", null, "Next");
-    nextButton.type = "button";
+    const nextButton = createActionButton("Next");
     nextButton.addEventListener("click", () => {
         if (engine.goNext()) {
             updateView();
