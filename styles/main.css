@@ -447,3 +447,79 @@ button {
         grid-template-columns: 1fr;
     }
 }
+
+.function-sequence-graph {
+    width: 100%;
+    margin-top: 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+}
+
+.graph-frame {
+    fill: transparent;
+    stroke: var(--border-color);
+    stroke-width: 1;
+}
+
+.graph-tick line {
+    stroke: var(--border-color);
+    stroke-width: 1;
+    stroke-dasharray: 2 4;
+}
+
+.graph-tick text,
+.axis-label,
+.graph-legend text {
+    fill: var(--muted-text-color);
+    font-size: 12px;
+}
+
+.graph-tick text {
+    text-anchor: end;
+}
+
+.graph-tick-x text {
+    text-anchor: middle;
+}
+
+.function-sequence-curve {
+    fill: none;
+    stroke-width: 2.5;
+}
+
+.function-sequence-curve.curve-1 {
+    stroke: #2a6ad6;
+}
+
+.function-sequence-curve.curve-2 {
+    stroke: #0b8f8f;
+}
+
+.function-sequence-curve.curve-3 {
+    stroke: #8a56d8;
+}
+
+.function-sequence-curve.curve-4 {
+    stroke: #d06a00;
+}
+
+.epsilon-line {
+    stroke: var(--error-color);
+    stroke-width: 2;
+    stroke-dasharray: 6 4;
+}
+
+.witness-line {
+    stroke: var(--error-color);
+    stroke-width: 2;
+    stroke-dasharray: 3 3;
+}
+
+.witness-point {
+    fill: var(--error-color);
+}
+
+.graph-legend text {
+    font-size: 13px;
+}
