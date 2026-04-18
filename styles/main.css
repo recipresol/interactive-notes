@@ -353,6 +353,9 @@ button {
 
 .progress-bar {
     width: 100%;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .progress-track {
@@ -361,6 +364,7 @@ button {
     width: 100%;
     align-items: center;
     min-height: calc(var(--progress-node-size) + 8px);
+    touch-action: manipulation;
 }
 
 .progress-node {
