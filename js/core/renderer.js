@@ -1,4 +1,5 @@
 import { getWidgetFactory } from "./widgetRegistry.js";
+import { renderMath } from "./math.js";
 
 function clearElement(element) {
     element.replaceChildren();
@@ -16,6 +17,26 @@ function createElement(tagName, className, textContent) {
     }
 
     return element;
+}
+
+const STEP_FADE_DURATION_MS = 160;
+
+function nextFrame() {
+    return new Promise((resolve) => {
+        window.requestAnimationFrame(() => {
+            resolve();
+        });
+    });
+}
+
+function wait(ms) {
+    return new Promise((resolve) => {
+        window.setTimeout(resolve, ms);
+    });
+}
+
+function shouldAnimateStepTransitions() {
+    return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
 function createActionButton(label) {
@@ -103,18 +124,14 @@ function renderFeedback(step, engine) {
 }
 
 function renderTextStep(step, engine, rerender) {
-    const wrapper = document.createElement("div");
     const body = createElement("p", "step-body", step.body);
-    const affordance = createElement("p", "step-affordance", "Use Next to continue.");
+    body.classList.add("text-step");
 
-    wrapper.append(body, affordance);
-    wrapper.className = "text-step";
-
-    return { body: wrapper, mount: null };
+    return { body, mount: null };
 }
 
 function renderMultipleChoiceStep(step, engine, rerender) {
-    const wrapper = document.createElement("div");
+    const fragment = document.createDocumentFragment();
     const prompt = createElement("p", "step-prompt", step.prompt);
     const list = createElement("ul", "choice-list");
     const selectedAnswer = engine.getSelectedAnswer(step.id);
@@ -161,12 +178,12 @@ function renderMultipleChoiceStep(step, engine, rerender) {
         input.addEventListener("change", checkAnswer);
     });
 
-    wrapper.append(prompt, list);
-    return { body: wrapper, mount: null };
+    fragment.append(prompt, list);
+    return { body: fragment, mount: null };
 }
 
 function renderWidgetStep(step, engine, rerender) {
-    const wrapper = document.createElement("div");
+    const fragment = document.createDocumentFragment();
     const prompt = createElement("p", "step-prompt", step.prompt);
     const widgetShell = createElement("div", "widget-shell");
     let widgetInstance = null;
@@ -198,10 +215,10 @@ function renderWidgetStep(step, engine, rerender) {
         }
     }
 
-    wrapper.append(prompt, widgetShell);
+    fragment.append(prompt, widgetShell);
 
     return {
-        body: wrapper,
+        body: fragment,
         mount,
         destroy() {
             if (widgetInstance && typeof widgetInstance.destroy === "function") {
@@ -255,6 +272,7 @@ export function renderHomePage(root, catalog) {
 
     shell.append(header, list);
     root.appendChild(shell);
+    renderMath(shell);
 }
 
 export function renderNotFound(root, lessonId) {
@@ -268,10 +286,12 @@ export function renderNotFound(root, lessonId) {
     );
 
     root.appendChild(shell);
+    renderMath(shell);
 }
 
 export function renderLessonPage(root, engine) {
     let activeStepView = null;
+    let isTransitioning = false;
     clearElement(root);
 
     const page = createElement("div", "lesson-page");
@@ -288,11 +308,16 @@ export function renderLessonPage(root, engine) {
     const shell = createElement("main", "lesson-shell");
 
     const content = createElement("section", "minimalist-lesson");
+    const contentInner = createElement("div", "minimalist-lesson-inner");
     const feedbackSlot = createElement("div", "feedback-slot");
 
     const actions = createElement("div", "lesson-actions");
     const backButton = createActionButton("Back");
     backButton.addEventListener("click", () => {
+        if (isTransitioning) {
+            return;
+        }
+
         if (engine.goBack()) {
             updateView();
         }
@@ -300,12 +325,17 @@ export function renderLessonPage(root, engine) {
 
     const nextButton = createActionButton("Next");
     nextButton.addEventListener("click", () => {
+        if (isTransitioning) {
+            return;
+        }
+
         if (engine.goNext()) {
             updateView();
         }
     });
 
     actions.append(backButton, nextButton);
+    content.appendChild(contentInner);
     shell.append(content, actions);
     page.append(lessonHeader, shell);
     root.appendChild(page);
@@ -318,16 +348,18 @@ export function renderLessonPage(root, engine) {
         const currentStep = engine.getCurrentStep();
         activeStepView = renderStep(currentStep, engine, updateView);
 
-        clearElement(content);
+        clearElement(contentInner);
         clearElement(feedbackSlot);
 
-        content.appendChild(activeStepView.body);
+        contentInner.appendChild(activeStepView.body);
         feedbackSlot.appendChild(renderFeedback(currentStep, engine));
-        content.appendChild(feedbackSlot);
+        contentInner.appendChild(feedbackSlot);
 
         if (typeof activeStepView.mount === "function") {
             activeStepView.mount();
         }
+
+        renderMath(contentInner);
     }
 
     function updateActions() {
@@ -335,11 +367,37 @@ export function renderLessonPage(root, engine) {
         nextButton.disabled = !engine.canGoNext();
     }
 
-    function updateView() {
+    async function updateView(options = {}) {
+        const { animate = true } = options;
+
+        if (isTransitioning) {
+            return;
+        }
+
+        const shouldAnimate = animate && shouldAnimateStepTransitions();
+
+        if (shouldAnimate) {
+            isTransitioning = true;
+            updateActions();
+            contentInner.classList.add("is-transitioning");
+            await nextFrame();
+            contentInner.classList.add("is-hidden");
+            await wait(STEP_FADE_DURATION_MS);
+        }
+
         progressBar.update();
-        updateActions();
         updateStepContent();
+
+        if (shouldAnimate) {
+            await nextFrame();
+            contentInner.classList.remove("is-hidden");
+            await wait(STEP_FADE_DURATION_MS);
+            contentInner.classList.remove("is-transitioning");
+            isTransitioning = false;
+        }
+
+        updateActions();
     }
 
-    updateView();
+    updateView({ animate: false });
 }

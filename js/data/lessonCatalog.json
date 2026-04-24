@@ -4,6 +4,16 @@
       "id": "uniform-convergence",
       "title": "Uniform Convergence: First Intuition",
       "description": "A small interactive introduction using f_n(x)=x^n on [0,1)."
+    },
+    {
+      "id": "fourier-series",
+      "title": "Fourier Series: Building Waves from Sines",
+      "description": "Explore partial sums, coefficient decay, and the Gibbs phenomenon."
+    },
+    {
+      "id": "discrete-fourier-transform",
+      "title": "Discrete Fourier Transform: Signals as Frequency Bins",
+      "description": "Edit a short signal and see how the DFT splits it into frequency content."
     }
   ]
 }

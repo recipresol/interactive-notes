@@ -1,0 +1,59 @@
+{
+  "id": "discrete-fourier-transform",
+  "title": "Discrete Fourier Transform: Signals as Frequency Bins",
+  "steps": [
+    {
+      "id": "intro",
+      "type": "text",
+      "title": "Finite data, finite frequencies",
+      "body": "The discrete Fourier transform takes a finite list of samples and rewrites it as a finite list of frequency bins. Each bin says how much of one circular rhythm appears in the data."
+    },
+    {
+      "id": "bins",
+      "type": "multiple_choice",
+      "title": "What is a bin?",
+      "prompt": "For $N$ samples, what does DFT bin $k$ measure?",
+      "choices": [
+        "How strongly the data matches a rhythm that completes $k$ cycles across the sample window.",
+        "The value of the $k$th original sample.",
+        "The amount of random noise added by the computer."
+      ],
+      "answer": 0,
+      "explanations": [
+        "Correct. The DFT compares the samples against complex waves with whole-number cycle counts.",
+        "Not quite. Samples live in the time domain; bins live in the frequency domain.",
+        "No. Noise can appear in bins, but the bins are not noise by definition."
+      ]
+    },
+    {
+      "id": "explore",
+      "type": "widget",
+      "title": "Edit the samples",
+      "prompt": "Change the time samples or try a preset. The middle chart shows DFT magnitudes; the last chart shows what happens when only the strongest low bins are kept.",
+      "widget": "discreteFourierTransformExplorer",
+      "params": {
+        "sampleCount": 8,
+        "initialPreset": "twoTone",
+        "maxAmplitude": 1.2,
+        "initialKeptBins": 3
+      }
+    },
+    {
+      "id": "symmetry",
+      "type": "multiple_choice",
+      "title": "Real signal symmetry",
+      "prompt": "When the input samples are real numbers, why do the DFT magnitudes often look mirrored?",
+      "choices": [
+        "Positive and negative frequency bins carry conjugate information.",
+        "The DFT secretly sorts the samples first.",
+        "Only the first bin is ever meaningful."
+      ],
+      "answer": 0,
+      "explanations": [
+        "Correct. Real-valued signals produce conjugate-symmetric frequency coefficients.",
+        "No. The sample order matters; sorting would change the signal.",
+        "No. The first bin is the average level, but the other bins carry oscillation information."
+      ]
+    }
+  ]
+}

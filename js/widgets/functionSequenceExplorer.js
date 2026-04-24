@@ -2,27 +2,88 @@ function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
 }
 
-function formatNumber(value) {
-    return Number(value).toFixed(3);
+function formatNumber(value, digits = 3) {
+    return Number(value).toFixed(digits);
 }
 
-function sampleWitness(params, epsilon, startN) {
-    const domain = Array.isArray(params.domain) ? params.domain : [0, 0.999];
-    const maxN = Number.isFinite(params.maxN) ? params.maxN : 50;
-    const upperN = Math.min(maxN, startN + 12);
-    const sampleCount = 80;
+function getKatexRenderer() {
+    return window.katex && typeof window.katex.render === "function"
+        ? window.katex.render
+        : null;
+}
 
-    for (let sampleIndex = 0; sampleIndex <= sampleCount; sampleIndex += 1) {
-        const x = domain[0] + ((domain[1] - domain[0]) * sampleIndex) / sampleCount;
-        for (let n = startN; n <= upperN; n += 1) {
-            const value = x ** n;
-            if (value >= epsilon) {
-                return { x, n, value };
-            }
-        }
+function renderKatex(element, expression) {
+    const katexRender = getKatexRenderer();
+
+    if (!element) {
+        return;
     }
 
-    return null;
+    if (!katexRender) {
+        element.textContent = expression;
+        return;
+    }
+
+    katexRender(expression, element, {
+        throwOnError: false
+    });
+}
+
+function getDomain(params) {
+    return Array.isArray(params.domain) ? params.domain : [0, 0.999];
+}
+
+function getMaxN(params) {
+    return Number.isFinite(params.maxN) ? params.maxN : 50;
+}
+
+const PLOT_PADDING = 8;
+const PLOT_MIN = PLOT_PADDING;
+const PLOT_MAX = 100 - PLOT_PADDING;
+const PLOT_SIZE = PLOT_MAX - PLOT_MIN;
+
+function toPlotX(x, domainMin, domainMax) {
+    return PLOT_MIN + (((x - domainMin) / (domainMax - domainMin || 1)) * PLOT_SIZE);
+}
+
+function toPlotY(y) {
+    return PLOT_MAX - (y * PLOT_SIZE);
+}
+
+function getWitness(params, epsilon, N) {
+    const [domainMin, domainMax] = getDomain(params);
+    const x = epsilon ** (1 / N);
+    const valueAtEdge = domainMax ** N;
+
+    if (x <= domainMax) {
+        return {
+            inView: true,
+            x: Math.max(x, domainMin),
+            value: Math.max(epsilon, domainMin ** N)
+        };
+    }
+
+    return {
+        inView: false,
+        x,
+        value: valueAtEdge
+    };
+}
+
+function buildCurvePath(params, N) {
+    const [domainMin, domainMax] = getDomain(params);
+    const sampleCount = 120;
+    const points = [];
+
+    for (let sampleIndex = 0; sampleIndex <= sampleCount; sampleIndex += 1) {
+        const x = domainMin + ((domainMax - domainMin) * sampleIndex) / sampleCount;
+        const y = x ** N;
+        const plotX = toPlotX(x, domainMin, domainMax);
+        const plotY = toPlotY(y);
+        points.push(`${sampleIndex === 0 ? "M" : "L"} ${plotX.toFixed(2)} ${plotY.toFixed(2)}`);
+    }
+
+    return points.join(" ");
 }
 
 export function createWidget(container, params, api = {}) {
@@ -31,34 +92,115 @@ export function createWidget(container, params, api = {}) {
         N: Number.isFinite(params.initialN) ? params.initialN : 8
     };
 
+    const widget = document.createElement("div");
+    widget.className = "sequence-widget";
+
+    const formula = document.createElement("div");
+    formula.className = "sequence-widget-formula";
+
+    const body = document.createElement("div");
+    body.className = "sequence-widget-body";
+
+    const plot = document.createElement("div");
+    plot.className = "sequence-widget-plot";
+
+    const plotSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    plotSvg.setAttribute("viewBox", "0 0 100 100");
+    plotSvg.setAttribute("aria-label", "Graph of x to the N with epsilon reference line");
+
+    const yAxis = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    yAxis.setAttribute("class", "sequence-widget-axis-line");
+    yAxis.setAttribute("x1", String(PLOT_MIN));
+    yAxis.setAttribute("x2", String(PLOT_MIN));
+    yAxis.setAttribute("y1", String(PLOT_MIN));
+    yAxis.setAttribute("y2", String(PLOT_MAX));
+
+    const xAxis = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    xAxis.setAttribute("class", "sequence-widget-axis-line");
+    xAxis.setAttribute("x1", String(PLOT_MIN));
+    xAxis.setAttribute("x2", String(PLOT_MAX));
+    xAxis.setAttribute("y1", String(PLOT_MAX));
+    xAxis.setAttribute("y2", String(PLOT_MAX));
+
+    const epsilonLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    epsilonLine.setAttribute("class", "sequence-widget-epsilon-line");
+    epsilonLine.setAttribute("x1", String(PLOT_MIN));
+    epsilonLine.setAttribute("x2", String(PLOT_MAX));
+
+    const functionPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    functionPath.setAttribute("class", "sequence-widget-curve");
+
+    const witnessDot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    witnessDot.setAttribute("class", "sequence-widget-witness");
+    witnessDot.setAttribute("r", "1.2");
+
+    plotSvg.append(yAxis, xAxis, epsilonLine, functionPath, witnessDot);
+
+    const epsilonTag = document.createElement("div");
+    epsilonTag.className = "sequence-widget-tag sequence-widget-tag-epsilon";
+
+    const witnessTag = document.createElement("div");
+    witnessTag.className = "sequence-widget-tag sequence-widget-tag-witness";
+
+    const axisMin = document.createElement("span");
+    axisMin.className = "sequence-widget-axis sequence-widget-axis-min";
+    axisMin.textContent = "0";
+
+    const axisMax = document.createElement("span");
+    axisMax.className = "sequence-widget-axis sequence-widget-axis-max";
+    axisMax.textContent = "1";
+
+    plot.append(plotSvg, epsilonTag, witnessTag, axisMin, axisMax);
+
     const controls = document.createElement("div");
-    controls.className = "widget-controls";
+    controls.className = "sequence-widget-controls";
 
-    const epsilonLabel = document.createElement("label");
-    epsilonLabel.textContent = "epsilon";
-    const epsilonInput = document.createElement("input");
-    epsilonInput.type = "number";
-    epsilonInput.min = "0.001";
-    epsilonInput.max = "1";
-    epsilonInput.step = "0.01";
+    const epsilonControl = document.createElement("label");
+    epsilonControl.className = "sequence-widget-control";
+    const epsilonLabel = document.createElement("span");
+    epsilonLabel.className = "sequence-widget-control-label";
+    const epsilonSlider = document.createElement("input");
+    epsilonSlider.className = "sequence-widget-slider";
+    epsilonSlider.type = "range";
+    epsilonSlider.min = "0.02";
+    epsilonSlider.max = "0.95";
+    epsilonSlider.step = "0.01";
+    const epsilonValue = document.createElement("span");
+    epsilonValue.className = "sequence-widget-control-value";
 
-    const nLabel = document.createElement("label");
-    nLabel.textContent = "N";
-    const nInput = document.createElement("input");
-    nInput.type = "number";
-    nInput.min = "1";
-    nInput.max = String(Number.isFinite(params.maxN) ? params.maxN : 50);
-    nInput.step = "1";
+    const nControl = document.createElement("label");
+    nControl.className = "sequence-widget-control";
+    const nLabel = document.createElement("span");
+    nLabel.className = "sequence-widget-control-label";
+    const nSlider = document.createElement("input");
+    nSlider.className = "sequence-widget-slider";
+    nSlider.type = "range";
+    nSlider.min = "1";
+    nSlider.max = String(getMaxN(params));
+    nSlider.step = "1";
+    const nValue = document.createElement("span");
+    nValue.className = "sequence-widget-control-value";
 
-    epsilonLabel.appendChild(epsilonInput);
-    nLabel.appendChild(nInput);
-    controls.append(epsilonLabel, nLabel);
+    epsilonControl.append(epsilonLabel, epsilonSlider, epsilonValue);
+    nControl.append(nLabel, nSlider, nValue);
+    controls.append(epsilonControl, nControl);
 
     const output = document.createElement("p");
-    output.className = "widget-output";
+    output.className = "widget-output sequence-widget-output";
+
     const checkButton = document.createElement("button");
     checkButton.type = "button";
+    checkButton.className = "sequence-widget-check";
     checkButton.textContent = "Check";
+
+    body.append(controls, plot);
+    widget.append(formula, body, output, checkButton);
+    container.replaceChildren(widget);
+
+    renderKatex(formula, "f_n(x)=x^n");
+    renderKatex(epsilonLabel, "\\varepsilon");
+    renderKatex(nLabel, "N");
+    renderKatex(epsilonTag, "\\varepsilon");
 
     function emitState() {
         if (typeof api.onStateChange === "function") {
@@ -66,36 +208,60 @@ export function createWidget(container, params, api = {}) {
         }
     }
 
-    function syncOutput() {
-        const domain = Array.isArray(params.domain) ? params.domain : [0, 0.999];
-        output.textContent = `Checking f_n(x)=x^n on [${formatNumber(domain[0])}, ${formatNumber(domain[1])}] with epsilon=${formatNumber(state.epsilon)} and N=${state.N}.`;
+    function syncPlot() {
+        const witness = getWitness(params, state.epsilon, state.N);
+        const [domainMin, domainMax] = getDomain(params);
+        const curvePath = buildCurvePath(params, state.N);
+        const epsilonY = toPlotY(state.epsilon);
+        const witnessX = toPlotX(clamp(witness.x, domainMin, domainMax), domainMin, domainMax);
+        const witnessY = toPlotY(clamp(witness.x, domainMin, domainMax) ** state.N);
+
+        functionPath.setAttribute("d", curvePath);
+        epsilonLine.setAttribute("y1", String(epsilonY));
+        epsilonLine.setAttribute("y2", String(epsilonY));
+
+        if (witness.inView) {
+            witnessDot.setAttribute("cx", String(witnessX));
+            witnessDot.setAttribute("cy", String(witnessY));
+            witnessDot.style.display = "block";
+            witnessTag.style.display = "block";
+            witnessTag.style.left = `calc(${witnessX}% - 0.9rem)`;
+            witnessTag.style.top = `calc(${witnessY}% - 2.1rem)`;
+            renderKatex(witnessTag, `x\\approx ${formatNumber(witness.x, 2)}`);
+        } else {
+            witnessDot.style.display = "none";
+            witnessTag.style.display = "none";
+        }
     }
 
-    function syncInputs() {
-        epsilonInput.value = String(state.epsilon);
-        nInput.value = String(state.N);
+    function syncOutput() {
+        const witness = getWitness(params, state.epsilon, state.N);
+
+        if (witness.inView) {
+            output.textContent = `A point near 1 still keeps x^N above epsilon.`;
+            return;
+        }
+
+        output.textContent = "The obstruction is pushed almost all the way to 1.";
+    }
+
+    function syncControls() {
+        epsilonSlider.value = String(state.epsilon);
+        nSlider.value = String(state.N);
+        epsilonValue.textContent = formatNumber(state.epsilon, 2);
+        nValue.textContent = String(state.N);
+        syncPlot();
         syncOutput();
     }
 
     function handleInput() {
         state = {
-            epsilon: clamp(Number.parseFloat(epsilonInput.value) || 0.001, 0.001, 1),
-            N: clamp(Math.round(Number.parseFloat(nInput.value) || 1), 1, Number.isFinite(params.maxN) ? params.maxN : 50)
+            epsilon: clamp(Number.parseFloat(epsilonSlider.value) || 0.02, 0.02, 0.95),
+            N: clamp(Math.round(Number.parseFloat(nSlider.value) || 1), 1, getMaxN(params))
         };
-        syncInputs();
+        syncControls();
         emitState();
     }
-
-    epsilonInput.addEventListener("input", handleInput);
-    nInput.addEventListener("input", handleInput);
-    checkButton.addEventListener("click", () => {
-        if (typeof api.onCheck === "function") {
-            api.onCheck(check());
-        }
-    });
-
-    container.replaceChildren(controls, output, checkButton);
-    syncInputs();
 
     function getState() {
         return { ...state };
@@ -107,37 +273,45 @@ export function createWidget(container, params, api = {}) {
         }
 
         state = {
-            epsilon: clamp(Number.parseFloat(nextState.epsilon) || state.epsilon, 0.001, 1),
-            N: clamp(Math.round(Number.parseFloat(nextState.N) || state.N), 1, Number.isFinite(params.maxN) ? params.maxN : 50)
+            epsilon: clamp(Number.parseFloat(nextState.epsilon) || state.epsilon, 0.02, 0.95),
+            N: clamp(Math.round(Number.parseFloat(nextState.N) || state.N), 1, getMaxN(params))
         };
-        syncInputs();
+        syncControls();
     }
 
     function check() {
-        const witness = sampleWitness(params, state.epsilon, state.N);
+        const witness = getWitness(params, state.epsilon, state.N);
 
-        if (witness) {
+        if (witness.inView) {
             return {
-                correct: false,
-                message: `Sampled witness found: x=${formatNumber(witness.x)} and n=${witness.n} give x^n=${formatNumber(witness.value)}, so points near 1 still cause trouble.`
+                correct: true,
+                message: `Right: choosing $x \\approx ${formatNumber(witness.x, 2)}$ gives $x^N \\approx ${formatNumber(witness.value, 2)} \\geq \\varepsilon$, so one finite $N$ still fails near $1$.`
             };
         }
 
         return {
             correct: true,
-            message: "This finite sampled check passed for your epsilon and N, though it is not a proof of uniform convergence."
+            message: `Right: the trouble is still near $x=1$. Here you need $x \\approx ${formatNumber(witness.x, 3)}$, just beyond the plotted window.`
         };
     }
 
-    function destroy() {
-        epsilonInput.removeEventListener("input", handleInput);
-        nInput.removeEventListener("input", handleInput);
-    }
+    epsilonSlider.addEventListener("input", handleInput);
+    nSlider.addEventListener("input", handleInput);
+    checkButton.addEventListener("click", () => {
+        if (typeof api.onCheck === "function") {
+            api.onCheck(check());
+        }
+    });
+
+    syncControls();
 
     return {
         getState,
         setState,
         check,
-        destroy
+        destroy() {
+            epsilonSlider.removeEventListener("input", handleInput);
+            nSlider.removeEventListener("input", handleInput);
+        }
     };
 }

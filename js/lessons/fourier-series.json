@@ -1,0 +1,59 @@
+{
+  "id": "fourier-series",
+  "title": "Fourier Series: Building Waves from Sines",
+  "steps": [
+    {
+      "id": "intro",
+      "type": "text",
+      "title": "The basic move",
+      "body": "A Fourier series tries to build a periodic function by adding sine and cosine waves. The first few terms give a rough silhouette; later terms add sharper detail."
+    },
+    {
+      "id": "coefficient-intuition",
+      "type": "multiple_choice",
+      "title": "Coefficient intuition",
+      "prompt": "If the Fourier coefficients shrink quickly, what should happen to the partial sums?",
+      "choices": [
+        "They usually settle down faster.",
+        "They must oscillate forever with no improvement.",
+        "They stop being periodic."
+      ],
+      "answer": 0,
+      "explanations": [
+        "Correct. Smaller high-frequency coefficients usually mean the later corrections are gentler.",
+        "Not quite. Oscillation can remain, but smaller coefficients usually make the approximation improve.",
+        "No. A finite sum of periodic sine and cosine waves is still periodic."
+      ]
+    },
+    {
+      "id": "explore-square",
+      "type": "widget",
+      "title": "Watch the partial sums",
+      "prompt": "Increase the number of terms. The square wave gets sharper, but pay attention to what happens near the jump.",
+      "widget": "fourierSeriesExplorer",
+      "params": {
+        "waveforms": ["square", "triangle", "sawtooth"],
+        "initialWaveform": "square",
+        "initialTerms": 5,
+        "maxTerms": 25
+      }
+    },
+    {
+      "id": "gibbs",
+      "type": "multiple_choice",
+      "title": "Near the jump",
+      "prompt": "For the square wave, what does adding more terms do near a discontinuity?",
+      "choices": [
+        "It removes every trace of overshoot immediately.",
+        "It narrows the overshoot region, but a visible overshoot remains.",
+        "It makes the period longer."
+      ],
+      "answer": 1,
+      "explanations": [
+        "The approximation improves away from the jump, but the overshoot is stubborn.",
+        "Correct. This is the visual footprint of the Gibbs phenomenon.",
+        "The period is set by the frequencies in the series, not by the number of terms shown here."
+      ]
+    }
+  ]
+}
