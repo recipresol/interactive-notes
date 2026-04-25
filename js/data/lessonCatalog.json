@@ -14,6 +14,11 @@
       "id": "discrete-fourier-transform",
       "title": "Discrete Fourier Transform: Signals as Frequency Bins",
       "description": "Edit a short signal and see how the DFT splits it into frequency content."
+    },
+    {
+      "id": "transformer-attention",
+      "title": "Transformer Attention: One Toy Head",
+      "description": "Drag Q, K, and V basis vectors to see scores, softmax weights, and value mixing."
     }
   ]
 }

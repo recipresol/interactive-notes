@@ -1,0 +1,64 @@
+{
+  "id": "transformer-attention",
+  "title": "Transformer Attention: One Toy Head",
+  "steps": [
+    {
+      "id": "intro",
+      "type": "text",
+      "title": "One attention head",
+      "body": "A transformer attention head reads each residual-stream vector three ways: as a query, a key, and a value. The query asks what to look for, keys decide which positions match, and values are the vectors that get mixed back in."
+    },
+    {
+      "id": "roles",
+      "type": "multiple_choice",
+      "title": "Roles",
+      "prompt": "In scaled dot-product attention, what gets softmaxed?",
+      "choices": [
+        "The dot products between one query and all keys.",
+        "The raw residual stream coordinates.",
+        "The value vectors after they are summed."
+      ],
+      "answer": 0,
+      "explanations": [
+        "Correct. Those scores become attention weights over positions.",
+        "No. Residual vectors are first transformed into queries, keys, and values.",
+        "Not quite. Values are mixed using the weights produced by the softmax."
+      ]
+    },
+    {
+      "id": "explore",
+      "type": "widget",
+      "title": "Edit the head",
+      "prompt": "",
+      "widget": "attentionHeadExplorer",
+      "params": {
+        "tokens": [
+          { "label": "0", "vector": [0.85, 0.1] },
+          { "label": "1", "vector": [0.25, 0.9] },
+          { "label": "2", "vector": [-0.35, 0.65] },
+          { "label": "3", "vector": [0.15, -0.8] },
+          { "label": "4", "vector": [-0.75, -0.15] },
+          { "label": "5", "vector": [-0.45, 0.45] }
+        ],
+        "initialSelectedIndex": 1
+      }
+    },
+    {
+      "id": "value-mixing",
+      "type": "multiple_choice",
+      "title": "Value mixing",
+      "prompt": "If one attention weight becomes much larger than the others, what happens to the output for that query position?",
+      "choices": [
+        "The output is pulled toward that position's value vector.",
+        "The keys are erased.",
+        "The query matrix stops mattering."
+      ],
+      "answer": 0,
+      "explanations": [
+        "Correct. The output is a weighted sum of value vectors.",
+        "No. Keys are still used to compute the scores.",
+        "No. Changing Q changes the query and therefore the scores."
+      ]
+    }
+  ]
+}
