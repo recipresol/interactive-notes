@@ -1,4 +1,4 @@
-import { clamp, formatNumber, renderKatex } from "./shared.js";
+import { clamp, createParameterSlider, formatNumber, renderKatex } from "./shared.js";
 
 function getDomain(params) {
     return Array.isArray(params.domain) ? params.domain : [0, 0.999];
@@ -126,51 +126,36 @@ export function createWidget(container, params, api = {}) {
     const controls = document.createElement("div");
     controls.className = "sequence-widget-controls";
 
-    const epsilonControl = document.createElement("label");
-    epsilonControl.className = "sequence-widget-control";
-    const epsilonLabel = document.createElement("span");
-    epsilonLabel.className = "sequence-widget-control-label";
-    const epsilonSlider = document.createElement("input");
-    epsilonSlider.className = "sequence-widget-slider";
-    epsilonSlider.type = "range";
-    epsilonSlider.min = "0.02";
-    epsilonSlider.max = "0.95";
-    epsilonSlider.step = "0.01";
-    const epsilonValue = document.createElement("span");
-    epsilonValue.className = "sequence-widget-control-value";
+    const epsilonControl = createParameterSlider({
+        label: "\\varepsilon",
+        min: "0.02",
+        max: "0.95",
+        step: "0.01",
+        orientation: "vertical"
+    });
+    const epsilonSlider = epsilonControl.input;
+    const epsilonValue = epsilonControl.value;
 
-    const nControl = document.createElement("label");
-    nControl.className = "sequence-widget-control";
-    const nLabel = document.createElement("span");
-    nLabel.className = "sequence-widget-control-label";
-    const nSlider = document.createElement("input");
-    nSlider.className = "sequence-widget-slider";
-    nSlider.type = "range";
-    nSlider.min = "1";
-    nSlider.max = String(getMaxN(params));
-    nSlider.step = "1";
-    const nValue = document.createElement("span");
-    nValue.className = "sequence-widget-control-value";
+    const nControl = createParameterSlider({
+        label: "N",
+        min: "1",
+        max: String(getMaxN(params)),
+        step: "1",
+        orientation: "vertical"
+    });
+    const nSlider = nControl.input;
+    const nValue = nControl.value;
 
-    epsilonControl.append(epsilonLabel, epsilonSlider, epsilonValue);
-    nControl.append(nLabel, nSlider, nValue);
-    controls.append(epsilonControl, nControl);
+    controls.append(epsilonControl.element, nControl.element);
 
     const output = document.createElement("p");
     output.className = "widget-output sequence-widget-output";
 
-    const checkButton = document.createElement("button");
-    checkButton.type = "button";
-    checkButton.className = "sequence-widget-check";
-    checkButton.textContent = "Check";
-
     body.append(controls, plot);
-    widget.append(formula, body, output, checkButton);
+    widget.append(formula, body, output);
     container.replaceChildren(widget);
 
     renderKatex(formula, "f_n(x)=x^n");
-    renderKatex(epsilonLabel, "\\varepsilon");
-    renderKatex(nLabel, "N");
     renderKatex(epsilonTag, "\\varepsilon");
 
     function emitState() {
@@ -268,11 +253,6 @@ export function createWidget(container, params, api = {}) {
 
     epsilonSlider.addEventListener("input", handleInput);
     nSlider.addEventListener("input", handleInput);
-    checkButton.addEventListener("click", () => {
-        if (typeof api.onCheck === "function") {
-            api.onCheck(check());
-        }
-    });
 
     syncControls();
 

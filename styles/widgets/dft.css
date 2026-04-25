@@ -9,8 +9,7 @@
     gap: 8px;
 }
 
-.dft-widget-preset,
-.dft-widget-check {
+.dft-widget-preset {
     min-height: 38px;
     border: 1px solid var(--border-color-strong);
     background: #ffffff;
@@ -163,35 +162,9 @@
     color: #777777;
 }
 
-.dft-widget-keep-control {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) 2.5rem;
-    gap: 10px;
-    align-items: center;
-    color: var(--text-color);
-}
-
-.dft-widget-keep-slider {
-    width: 100%;
-    accent-color: var(--progress-color);
-}
-
-.dft-widget-keep-value {
-    color: var(--muted-text-color);
-    font-variant-numeric: tabular-nums;
-    text-align: right;
-}
-
 .dft-widget-output {
     color: var(--muted-text-color);
     text-align: center;
-}
-
-.dft-widget-check {
-    justify-self: center;
-    min-width: 120px;
-    padding: 0 18px;
-    border-radius: 999px;
 }
 
 @media (max-width: 700px) {

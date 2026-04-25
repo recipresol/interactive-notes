@@ -1,4 +1,4 @@
-import { clamp, formatNumber, renderKatex } from "./shared.js";
+import { clamp, createParameterSlider, formatNumber, renderKatex } from "./shared.js";
 
 function getMaxTerms(params) {
     return Number.isFinite(params.maxTerms) ? params.maxTerms : 25;
@@ -153,24 +153,16 @@ export function createWidget(container, params, api = {}) {
         waveformGroup.appendChild(button);
     }
 
-    const termControl = document.createElement("label");
-    termControl.className = "fourier-widget-term-control";
+    const termControl = createParameterSlider({
+        label: "\\text{terms}",
+        min: "1",
+        max: String(maxTerms),
+        step: "1"
+    });
+    const termSlider = termControl.input;
+    const termValue = termControl.value;
 
-    const termLabel = document.createElement("span");
-    termLabel.className = "fourier-widget-term-label";
-
-    const termSlider = document.createElement("input");
-    termSlider.className = "fourier-widget-slider";
-    termSlider.type = "range";
-    termSlider.min = "1";
-    termSlider.max = String(maxTerms);
-    termSlider.step = "1";
-
-    const termValue = document.createElement("span");
-    termValue.className = "fourier-widget-term-value";
-
-    termControl.append(termLabel, termSlider, termValue);
-    controls.append(waveformGroup, termControl);
+    controls.append(waveformGroup, termControl.element);
 
     const plot = document.createElement("div");
     plot.className = "fourier-widget-plot";
@@ -218,15 +210,8 @@ export function createWidget(container, params, api = {}) {
     const output = document.createElement("p");
     output.className = "widget-output fourier-widget-output";
 
-    const checkButton = document.createElement("button");
-    checkButton.type = "button";
-    checkButton.className = "fourier-widget-check";
-    checkButton.textContent = "Check";
-
-    widget.append(header, controls, plot, legend, output, checkButton);
+    widget.append(header, controls, plot, legend, output);
     container.replaceChildren(widget);
-
-    renderKatex(termLabel, "terms");
 
     function emitState() {
         if (typeof api.onStateChange === "function") {
@@ -320,11 +305,6 @@ export function createWidget(container, params, api = {}) {
     }
 
     termSlider.addEventListener("input", handleTermInput);
-    checkButton.addEventListener("click", () => {
-        if (typeof api.onCheck === "function") {
-            api.onCheck(check());
-        }
-    });
 
     sync();
 

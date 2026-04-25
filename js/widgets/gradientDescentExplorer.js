@@ -1,4 +1,4 @@
-import { clamp, createSvgElement, formatNumber, renderKatex } from "./shared.js";
+import { clamp, createParameterSlider, createSvgElement, formatNumber, renderKatex } from "./shared.js";
 
 const VIEWBOX_SIZE = 100;
 const PLOT_MIN = 8;
@@ -130,43 +130,30 @@ export function createWidget(container, params, api = {}) {
     const controls = document.createElement("div");
     controls.className = "gradient-controls";
 
-    const stepControl = document.createElement("label");
-    stepControl.className = "gradient-control";
-    const stepLabel = document.createElement("span");
-    renderKatex(stepLabel, "\\eta");
-    const stepSlider = document.createElement("input");
-    stepSlider.type = "range";
-    stepSlider.min = "0.02";
-    stepSlider.max = "0.62";
-    stepSlider.step = "0.01";
-    const stepValue = document.createElement("span");
-    stepValue.className = "gradient-control-value";
-    stepControl.append(stepLabel, stepSlider, stepValue);
+    const stepControl = createParameterSlider({
+        label: "\\eta",
+        min: "0.02",
+        max: "0.62",
+        step: "0.01"
+    });
+    const stepSlider = stepControl.input;
+    const stepValue = stepControl.value;
 
-    const iterControl = document.createElement("label");
-    iterControl.className = "gradient-control";
-    const iterLabel = document.createElement("span");
-    renderKatex(iterLabel, "T");
-    const iterSlider = document.createElement("input");
-    iterSlider.type = "range";
-    iterSlider.min = "1";
-    iterSlider.max = "24";
-    iterSlider.step = "1";
-    const iterValue = document.createElement("span");
-    iterValue.className = "gradient-control-value";
-    iterControl.append(iterLabel, iterSlider, iterValue);
+    const iterControl = createParameterSlider({
+        label: "T",
+        min: "1",
+        max: "24",
+        step: "1"
+    });
+    const iterSlider = iterControl.input;
+    const iterValue = iterControl.value;
 
-    controls.append(stepControl, iterControl);
+    controls.append(stepControl.element, iterControl.element);
 
     const readout = document.createElement("p");
     readout.className = "widget-output gradient-output";
 
-    const checkButton = document.createElement("button");
-    checkButton.type = "button";
-    checkButton.className = "gradient-check";
-    checkButton.textContent = "Check";
-
-    widget.append(plot, controls, readout, checkButton);
+    widget.append(plot, controls, readout);
     container.replaceChildren(widget);
 
     function emitState() {
@@ -359,11 +346,6 @@ export function createWidget(container, params, api = {}) {
     document.addEventListener("pointermove", handleDocumentPointerMove);
     document.addEventListener("pointerup", handleDocumentPointerUp);
     document.addEventListener("pointercancel", handleDocumentPointerUp);
-    checkButton.addEventListener("click", () => {
-        if (typeof api.onCheck === "function") {
-            api.onCheck(check());
-        }
-    });
 
     sync();
 

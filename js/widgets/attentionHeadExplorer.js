@@ -86,11 +86,6 @@ export function createWidget(container, params, api = {}) {
     const stack = document.createElement("div");
     stack.className = "attention-stack";
 
-    const checkButton = document.createElement("button");
-    checkButton.type = "button";
-    checkButton.className = "attention-check";
-    checkButton.textContent = "Check";
-
     const output = document.createElement("p");
     output.className = "widget-output attention-output";
 
@@ -113,7 +108,7 @@ export function createWidget(container, params, api = {}) {
         rows.V.element,
         rows.Z.element
     );
-    widget.append(stack, checkButton, output);
+    widget.append(stack, output);
     container.replaceChildren(widget);
 
     function createRow(matrixName, rowLabel, classKey) {
@@ -490,11 +485,6 @@ export function createWidget(container, params, api = {}) {
     document.addEventListener("pointermove", handleDocumentPointerMove);
     document.addEventListener("pointerup", handleDocumentPointerUp);
     document.addEventListener("pointercancel", handleDocumentPointerUp);
-    checkButton.addEventListener("click", () => {
-        if (typeof api.onCheck === "function") {
-            api.onCheck(check());
-        }
-    });
 
     sync();
 

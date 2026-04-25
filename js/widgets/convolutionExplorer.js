@@ -68,12 +68,7 @@ export function createWidget(container, params, api = {}) {
     const output = document.createElement("p");
     output.className = "widget-output convolution-output";
 
-    const checkButton = document.createElement("button");
-    checkButton.type = "button";
-    checkButton.className = "convolution-check";
-    checkButton.textContent = "Check";
-
-    widget.append(stack, kernelEditor, checkButton, output);
+    widget.append(stack, kernelEditor, output);
     container.replaceChildren(widget);
 
     function createRow(labelExpression) {
@@ -323,11 +318,6 @@ export function createWidget(container, params, api = {}) {
     document.addEventListener("pointermove", handleDocumentPointerMove);
     document.addEventListener("pointerup", handleDocumentPointerUp);
     document.addEventListener("pointercancel", handleDocumentPointerUp);
-    checkButton.addEventListener("click", () => {
-        if (typeof api.onCheck === "function") {
-            api.onCheck(check());
-        }
-    });
 
     sync();
 

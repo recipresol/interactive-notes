@@ -160,16 +160,6 @@
     text-align: center;
 }
 
-.convolution-check {
-    justify-self: center;
-    min-width: 96px;
-    min-height: 34px;
-    padding: 0 16px;
-    border: 1px solid var(--border-color-strong);
-    border-radius: 999px;
-    background: #ffffff;
-    color: var(--text-color);
-}
 
 @media (max-width: 700px) {
     .convolution-row {

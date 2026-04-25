@@ -247,17 +247,6 @@
     text-align: center;
 }
 
-.attention-check {
-    justify-self: center;
-    min-width: 77px;
-    min-height: 27px;
-    padding: 0 13px;
-    border: 1px solid var(--border-color-strong);
-    border-radius: 999px;
-    background: #ffffff;
-    color: var(--text-color);
-}
-
 @media (max-width: 700px) {
     .attention-row {
         grid-template-columns: minmax(22px, 0.8fr) minmax(0, 4.8fr) minmax(22px, 0.4fr);

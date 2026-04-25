@@ -1,4 +1,4 @@
-import { clamp, createSvgElement, formatNumber, setLine } from "./shared.js";
+import { clamp, createParameterSlider, createSvgElement, formatNumber, setLine } from "./shared.js";
 
 function getSampleCount(params) {
     return Number.isInteger(params.sampleCount) ? clamp(params.sampleCount, 4, 16) : 8;
@@ -168,23 +168,14 @@ export function createWidget(container, params, api = {}) {
     const frequencyPlot = createPlot("DFT magnitudes + kept bins", "Aligned by bin/sample index");
     plots.append(timePlot.element, frequencyPlot.element);
 
-    const keepControl = document.createElement("label");
-    keepControl.className = "dft-widget-keep-control";
-
-    const keepLabel = document.createElement("span");
-    keepLabel.textContent = "kept bins";
-
-    const keepSlider = document.createElement("input");
-    keepSlider.type = "range";
-    keepSlider.min = "0";
-    keepSlider.max = String(maxKeptBins);
-    keepSlider.step = "1";
-    keepSlider.className = "dft-widget-keep-slider";
-
-    const keepValue = document.createElement("span");
-    keepValue.className = "dft-widget-keep-value";
-
-    keepControl.append(keepLabel, keepSlider, keepValue);
+    const keepControl = createParameterSlider({
+        label: "\\text{kept bins}",
+        min: "0",
+        max: String(maxKeptBins),
+        step: "1"
+    });
+    const keepSlider = keepControl.input;
+    const keepValue = keepControl.value;
 
     const legend = document.createElement("div");
     legend.className = "dft-widget-legend";
@@ -198,12 +189,7 @@ export function createWidget(container, params, api = {}) {
     const output = document.createElement("p");
     output.className = "widget-output dft-widget-output";
 
-    const checkButton = document.createElement("button");
-    checkButton.type = "button";
-    checkButton.className = "dft-widget-check";
-    checkButton.textContent = "Check";
-
-    widget.append(presetBar, plots, keepControl, legend, output, checkButton);
+    widget.append(presetBar, plots, keepControl.element, legend, output);
     container.replaceChildren(widget);
 
     function createPlot(title, subtitle) {
@@ -503,11 +489,6 @@ export function createWidget(container, params, api = {}) {
     document.addEventListener("pointermove", handleDocumentPointerMove);
     document.addEventListener("pointerup", handleDocumentPointerUp);
     document.addEventListener("pointercancel", handleDocumentPointerUp);
-    checkButton.addEventListener("click", () => {
-        if (typeof api.onCheck === "function") {
-            api.onCheck(check());
-        }
-    });
 
     sync();
 

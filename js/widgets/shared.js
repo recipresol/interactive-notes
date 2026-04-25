@@ -29,6 +29,46 @@ export function renderKatex(element, expression) {
     katexRender(expression, element, { throwOnError: false });
 }
 
+export function createParameterSlider(options = {}) {
+    const {
+        label = "",
+        min = "0",
+        max = "1",
+        step = "1",
+        value = min,
+        orientation = "horizontal"
+    } = options;
+    const sliderOrientation = orientation === "vertical" ? "vertical" : "horizontal";
+
+    const element = document.createElement("label");
+    element.className = `widget-parameter-control widget-parameter-control-${sliderOrientation}`;
+
+    const labelElement = document.createElement("span");
+    labelElement.className = "widget-parameter-label";
+    renderKatex(labelElement, label);
+
+    const input = document.createElement("input");
+    input.className = `widget-parameter-slider widget-parameter-slider-${sliderOrientation}`;
+    input.type = "range";
+    input.min = String(min);
+    input.max = String(max);
+    input.step = String(step);
+    input.value = String(value);
+    input.setAttribute("aria-orientation", sliderOrientation);
+
+    const valueElement = document.createElement("span");
+    valueElement.className = "widget-parameter-value";
+
+    element.append(labelElement, input, valueElement);
+
+    return {
+        element,
+        label: labelElement,
+        input,
+        value: valueElement
+    };
+}
+
 export function createSvgElement(tagName, className) {
     const element = document.createElementNS(SVG_NS, tagName);
 

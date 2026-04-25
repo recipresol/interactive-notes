@@ -53,6 +53,10 @@ function createStepLookup(lesson) {
     return Object.fromEntries(lesson.steps.map((step, index) => [step.id, index]));
 }
 
+function canAdvanceWithoutCheck(step) {
+    return step.type === "text" || (step.type === "widget" && step.check === false);
+}
+
 export function createLessonEngine(lesson) {
     const stepLookup = createStepLookup(lesson);
     const state = sanitizeProgress(lesson, loadProgress(lesson.id));
@@ -137,7 +141,7 @@ export function createLessonEngine(lesson) {
     }
 
     function canAdvanceFromStep(step = getCurrentStep()) {
-        if (step.type === "text") {
+        if (canAdvanceWithoutCheck(step)) {
             return true;
         }
 
@@ -160,7 +164,7 @@ export function createLessonEngine(lesson) {
         if (index > state.currentStepIndex) {
             for (let cursor = 0; cursor < index; cursor += 1) {
                 const priorStep = lesson.steps[cursor];
-                if (!isStepComplete(priorStep.id) && priorStep.type !== "text") {
+                if (!isStepComplete(priorStep.id) && !canAdvanceWithoutCheck(priorStep)) {
                     return false;
                 }
             }
@@ -187,7 +191,7 @@ export function createLessonEngine(lesson) {
         }
 
         const currentStep = getCurrentStep();
-        if (currentStep.type === "text") {
+        if (canAdvanceWithoutCheck(currentStep)) {
             completeTextStep(currentStep.id);
         }
 

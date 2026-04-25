@@ -36,8 +36,7 @@
     gap: 8px;
 }
 
-.fourier-widget-waveform,
-.fourier-widget-check {
+.fourier-widget-waveform {
     min-height: 38px;
     border: 1px solid var(--border-color-strong);
     background: #ffffff;
@@ -54,28 +53,6 @@
 .fourier-widget-waveform.is-selected {
     border-color: var(--progress-color);
     background: #f7fbff;
-}
-
-.fourier-widget-term-control {
-    display: grid;
-    grid-template-columns: auto minmax(80px, 1fr) 2.5rem;
-    gap: 10px;
-    align-items: center;
-}
-
-.fourier-widget-term-label {
-    color: var(--text-color);
-}
-
-.fourier-widget-term-value {
-    color: var(--muted-text-color);
-    font-variant-numeric: tabular-nums;
-    text-align: right;
-}
-
-.fourier-widget-slider {
-    width: 100%;
-    accent-color: var(--progress-color);
 }
 
 .fourier-widget-plot {
@@ -176,20 +153,9 @@
     text-align: center;
 }
 
-.fourier-widget-check {
-    justify-self: center;
-    min-width: 120px;
-    padding: 0 18px;
-    border-radius: 999px;
-}
-
 @media (max-width: 700px) {
     .fourier-widget-controls {
         grid-template-columns: 1fr;
-    }
-
-    .fourier-widget-term-control {
-        grid-template-columns: auto minmax(0, 1fr) 2.5rem;
     }
 
     .fourier-widget-plot {

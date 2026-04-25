@@ -86,7 +86,6 @@
 
 .step-body,
 .step-prompt,
-.feedback-message,
 .widget-output {
     margin: 12px 0 0;
 }
@@ -159,16 +158,40 @@
     transform: translateY(0);
 }
 
-.feedback-message {
-    min-height: 1.5em;
-}
-
 .feedback-success {
     color: var(--success-color);
 }
 
 .feedback-error {
     color: var(--error-color);
+}
+
+.lesson-feedback-popup {
+    position: absolute;
+    z-index: 4;
+    left: 50%;
+    bottom: 88px;
+    width: min(calc(100% - 32px), var(--interactive-width));
+    max-width: 640px;
+    padding: 12px 14px;
+    border: 1px solid var(--border-color-strong);
+    border-radius: var(--button-radius);
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 12px 32px var(--shadow-color);
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, 8px);
+    transition:
+        opacity 180ms ease,
+        transform 180ms ease,
+        visibility 180ms ease;
+    pointer-events: none;
+}
+
+.lesson-feedback-popup.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
 }
 
 .widget-controls label {
@@ -191,4 +214,3 @@
     overflow-y: hidden;
     padding: 0.125rem 0;
 }
-

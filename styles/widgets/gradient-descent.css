@@ -75,41 +75,11 @@
     align-items: center;
 }
 
-.gradient-control {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) 3rem;
-    gap: 10px;
-    align-items: center;
-    color: var(--text-color);
-}
-
-.gradient-control input {
-    width: 100%;
-    accent-color: var(--progress-color);
-}
-
-.gradient-control-value {
-    color: var(--muted-text-color);
-    font-variant-numeric: tabular-nums;
-    text-align: right;
-}
-
 .gradient-output {
     min-height: 1.2em;
     color: var(--muted-text-color);
     font-size: 0.78rem;
     text-align: center;
-}
-
-.gradient-check {
-    justify-self: center;
-    min-width: 96px;
-    min-height: 34px;
-    padding: 0 16px;
-    border: 1px solid var(--border-color-strong);
-    border-radius: 999px;
-    background: #ffffff;
-    color: var(--text-color);
 }
 
 @media (max-width: 700px) {

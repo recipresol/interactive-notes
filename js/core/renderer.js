@@ -20,6 +20,7 @@ function createElement(tagName, className, textContent) {
 }
 
 const STEP_FADE_DURATION_MS = 160;
+const FEEDBACK_POPUP_DURATION_MS = 3600;
 
 function nextFrame() {
     return new Promise((resolve) => {
@@ -48,6 +49,15 @@ function createActionButton(label) {
     button.appendChild(face);
 
     return button;
+}
+
+function setActionButtonLabel(button, label) {
+    button.setAttribute("aria-label", label);
+
+    const face = button.querySelector(".action-button-face");
+    if (face) {
+        face.textContent = label;
+    }
 }
 
 function createHomeLink() {
@@ -105,24 +115,6 @@ function createProgressBar(engine) {
     };
 }
 
-function renderFeedback(step, engine) {
-    const feedback = engine.getFeedback(step.id);
-    const message = createElement("p", "feedback-message");
-
-    if (!feedback) {
-        return message;
-    }
-
-    message.textContent = feedback.message;
-    if (feedback.tone === "success") {
-        message.classList.add("feedback-success");
-    } else if (feedback.tone === "error") {
-        message.classList.add("feedback-error");
-    }
-
-    return message;
-}
-
 function renderTextStep(step, engine, rerender) {
     const body = createElement("p", "step-body", step.body);
     body.classList.add("text-step");
@@ -136,6 +128,16 @@ function renderMultipleChoiceStep(step, engine, rerender) {
     const list = createElement("ul", "choice-list");
     const selectedAnswer = engine.getSelectedAnswer(step.id);
 
+    function syncSelectedChoice() {
+        list.querySelectorAll(".choice-label").forEach((label) => {
+            const input = label.querySelector(".choice-input");
+            const card = label.querySelector(".choice-card");
+            if (card && input) {
+                card.classList.toggle("is-selected", input.checked);
+            }
+        });
+    }
+
     step.choices.forEach((choice, index) => {
         const item = createElement("li", "choice-item");
         const label = createElement("label", "choice-label");
@@ -148,7 +150,8 @@ function renderMultipleChoiceStep(step, engine, rerender) {
         input.checked = selectedAnswer === index;
         input.addEventListener("change", () => {
             engine.setSelectedAnswer(step.id, index);
-            rerender();
+            syncSelectedChoice();
+            rerender({ animate: false });
         });
 
         if (selectedAnswer === index) {
@@ -160,26 +163,29 @@ function renderMultipleChoiceStep(step, engine, rerender) {
         list.appendChild(item);
     });
 
-    function checkAnswer() {
+    function check() {
         const choiceIndex = engine.getSelectedAnswer(step.id);
         if (choiceIndex === undefined) {
-            return;
+            return {
+                correct: false,
+                message: "Choose an answer first."
+            };
         }
 
-        const result = {
+        return {
             correct: choiceIndex === step.answer,
             message: step.explanations[choiceIndex]
         };
-        engine.setCheckedAnswer(step.id, result);
-        rerender();
     }
 
-    list.querySelectorAll("input").forEach((input) => {
-        input.addEventListener("change", checkAnswer);
-    });
-
     fragment.append(prompt, list);
-    return { body: fragment, mount: null };
+    return {
+        body: fragment,
+        stepId: step.id,
+        checkKind: "multiple_choice",
+        mount: null,
+        check
+    };
 }
 
 function renderWidgetStep(step, engine, rerender) {
@@ -192,11 +198,6 @@ function renderWidgetStep(step, engine, rerender) {
         engine.setWidgetState(step.id, nextState);
     }
 
-    function onCheck(result) {
-        engine.setWidgetCheck(step.id, result);
-        rerender();
-    }
-
     function mount() {
         const widgetFactory = getWidgetFactory(step.widget);
         if (!widgetFactory) {
@@ -205,8 +206,7 @@ function renderWidgetStep(step, engine, rerender) {
         }
 
         widgetInstance = widgetFactory(widgetShell, step.params || {}, {
-            onStateChange,
-            onCheck
+            onStateChange
         });
 
         const savedState = engine.getWidgetState(step.id);
@@ -219,7 +219,14 @@ function renderWidgetStep(step, engine, rerender) {
 
     return {
         body: fragment,
+        stepId: step.id,
+        checkKind: "widget",
         mount,
+        check() {
+            return widgetInstance && typeof widgetInstance.check === "function"
+                ? widgetInstance.check()
+                : null;
+        },
         destroy() {
             if (widgetInstance && typeof widgetInstance.destroy === "function") {
                 widgetInstance.destroy();
@@ -292,6 +299,7 @@ export function renderNotFound(root, lessonId) {
 export function renderLessonPage(root, engine) {
     let activeStepView = null;
     let isTransitioning = false;
+    let feedbackTimeout = null;
     clearElement(root);
 
     const page = createElement("div", "lesson-page");
@@ -309,7 +317,10 @@ export function renderLessonPage(root, engine) {
 
     const content = createElement("section", "minimalist-lesson");
     const contentInner = createElement("div", "minimalist-lesson-inner");
-    const feedbackSlot = createElement("div", "feedback-slot");
+    const feedbackPopup = createElement("div", "lesson-feedback-popup");
+    feedbackPopup.setAttribute("role", "status");
+    feedbackPopup.setAttribute("aria-live", "polite");
+    feedbackPopup.setAttribute("aria-atomic", "true");
 
     const actions = createElement("div", "lesson-actions");
     const backButton = createActionButton("Back");
@@ -329,6 +340,20 @@ export function renderLessonPage(root, engine) {
             return;
         }
 
+        const currentStep = engine.getCurrentStep();
+        if (activeStepNeedsCheck(currentStep)) {
+            const result = activeStepView.check();
+            if (!result) {
+                return;
+            }
+
+            applyCheckResult(currentStep, result);
+            progressBar.update();
+            updateActions();
+            showFeedback(result);
+            return;
+        }
+
         if (engine.goNext()) {
             updateView();
         }
@@ -336,9 +361,68 @@ export function renderLessonPage(root, engine) {
 
     actions.append(backButton, nextButton);
     content.appendChild(contentInner);
-    shell.append(content, actions);
+    shell.append(content, feedbackPopup, actions);
     page.append(lessonHeader, shell);
     root.appendChild(page);
+
+    function stepCallsForCheck(step) {
+        return step
+            && (step.type === "multiple_choice" || (step.type === "widget" && step.check !== false));
+    }
+
+    function activeStepNeedsCheck(step = engine.getCurrentStep()) {
+        return stepCallsForCheck(step)
+            && !engine.isStepComplete(step.id)
+            && activeStepView
+            && activeStepView.stepId === step.id
+            && typeof activeStepView.check === "function";
+    }
+
+    function applyCheckResult(step, result) {
+        if (activeStepView.checkKind === "multiple_choice") {
+            engine.setCheckedAnswer(step.id, result);
+            return;
+        }
+
+        if (activeStepView.checkKind === "widget") {
+            engine.setWidgetCheck(step.id, result);
+        }
+    }
+
+    function clearFeedbackPopup() {
+        if (feedbackTimeout) {
+            window.clearTimeout(feedbackTimeout);
+            feedbackTimeout = null;
+        }
+
+        feedbackPopup.classList.remove("is-visible", "feedback-success", "feedback-error");
+        feedbackPopup.replaceChildren();
+    }
+
+    function showFeedback(feedback) {
+        if (!feedback || !feedback.message) {
+            clearFeedbackPopup();
+            return;
+        }
+
+        if (feedbackTimeout) {
+            window.clearTimeout(feedbackTimeout);
+        }
+
+        feedbackPopup.classList.remove("feedback-success", "feedback-error");
+        feedbackPopup.classList.add("is-visible");
+        if (feedback.correct || feedback.tone === "success") {
+            feedbackPopup.classList.add("feedback-success");
+        } else if (feedback.tone === "error" || feedback.correct === false) {
+            feedbackPopup.classList.add("feedback-error");
+        }
+        feedbackPopup.replaceChildren(createElement("p", null, feedback.message));
+        renderMath(feedbackPopup);
+
+        feedbackTimeout = window.setTimeout(() => {
+            clearFeedbackPopup();
+        }, FEEDBACK_POPUP_DURATION_MS);
+    }
 
     function updateStepContent() {
         if (activeStepView && typeof activeStepView.destroy === "function") {
@@ -349,11 +433,9 @@ export function renderLessonPage(root, engine) {
         activeStepView = renderStep(currentStep, engine, updateView);
 
         clearElement(contentInner);
-        clearElement(feedbackSlot);
+        clearFeedbackPopup();
 
         contentInner.appendChild(activeStepView.body);
-        feedbackSlot.appendChild(renderFeedback(currentStep, engine));
-        contentInner.appendChild(feedbackSlot);
 
         if (typeof activeStepView.mount === "function") {
             activeStepView.mount();
@@ -363,12 +445,14 @@ export function renderLessonPage(root, engine) {
     }
 
     function updateActions() {
+        const currentStep = engine.getCurrentStep();
         backButton.disabled = !engine.canGoBack();
-        nextButton.disabled = !engine.canGoNext();
+        setActionButtonLabel(nextButton, activeStepNeedsCheck(currentStep) ? "Check" : "Next");
+        nextButton.disabled = activeStepNeedsCheck(currentStep) ? false : !engine.canGoNext();
     }
 
     async function updateView(options = {}) {
-        const { animate = true } = options;
+        const { animate = true, feedback = null } = options;
 
         if (isTransitioning) {
             return;
@@ -397,6 +481,9 @@ export function renderLessonPage(root, engine) {
         }
 
         updateActions();
+        if (feedback) {
+            showFeedback(feedback);
+        }
     }
 
     updateView({ animate: false });
