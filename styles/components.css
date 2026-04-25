@@ -1,0 +1,194 @@
+.app-shell {
+    max-width: 880px;
+    min-height: 100dvh;
+    margin: 0 auto;
+    padding: 24px 16px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.catalog-list,
+.choice-list {
+    padding-left: 20px;
+}
+
+.catalog-item,
+.widget-shell {
+    padding: 16px;
+}
+
+.catalog-list {
+    display: grid;
+    gap: 16px;
+}
+
+.catalog-list,
+.choice-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.catalog-item {
+    margin-top: 12px;
+}
+
+.choice-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    padding: 40px 0;
+}
+
+.choice-label {
+    display: block;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.choice-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.choice-card {
+    display: block;
+    min-height: 100%;
+    padding: 16px 16px;
+    text-align: center;
+    background: #ffffff;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-color);
+    transition:
+        border-color 120ms ease,
+        background-color 120ms ease;
+}
+
+.choice-label:hover .choice-card {
+    border-color: var(--progress-color-soft);
+    background: #fbfdff;
+}
+
+.choice-label:active .choice-card {
+    border-color: var(--progress-color);
+    background: #f9fcff;
+}
+
+.choice-label:hover .choice-card.is-selected,
+.choice-card.is-selected {
+    border-color: var(--progress-color);
+    background: #f9fcff;
+}
+
+.step-body,
+.step-prompt,
+.feedback-message,
+.widget-output {
+    margin: 12px 0 0;
+}
+
+.step-prompt:empty {
+    display: none;
+}
+
+.widget-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
+.lesson-actions {
+    display: flex;
+    gap: 12px;
+    width: min(100%, var(--interactive-width, 78%));
+    padding-top: 24px;
+}
+
+.action-button {
+    flex: 1 1 0;
+    border: 0;
+    border-radius: var(--button-radius);
+    background: var(--button-bg);
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.action-button-face {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    border-radius: inherit;
+    background: var(--button-face-bg);
+    color: var(--button-text);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transform: translateY(-4px);
+    transition:
+        transform 120ms cubic-bezier(.3, .7, .4, 1.5),
+        filter 120ms ease,
+        background-color 120ms ease;
+    user-select: none;
+    -webkit-user-select: none;
+    pointer-events: none;
+}
+
+.action-button:hover .action-button-face {
+    filter: brightness(1.1);
+    transform: translateY(-4px);
+}
+
+.action-button:active .action-button-face {
+    transform: translateY(0);
+    transition: transform 120ms;
+}
+
+.action-button:disabled {
+    cursor: not-allowed;
+}
+
+.action-button:disabled .action-button-face {
+    filter: saturate(0.65) brightness(0.9);
+    transform: translateY(0);
+}
+
+.feedback-message {
+    min-height: 1.5em;
+}
+
+.feedback-success {
+    color: var(--success-color);
+}
+
+.feedback-error {
+    color: var(--error-color);
+}
+
+.widget-controls label {
+    display: grid;
+    gap: 4px;
+}
+
+.widget-controls input {
+    width: 120px;
+    padding: 6px 8px;
+}
+
+.katex {
+    font-size: 1.05em;
+}
+
+.katex-display {
+    margin: 0.75rem 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.125rem 0;
+}
+

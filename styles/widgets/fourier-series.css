@@ -1,0 +1,196 @@
+.fourier-widget {
+    display: grid;
+    gap: 14px;
+}
+
+.fourier-widget-header {
+    display: grid;
+    gap: 8px;
+    justify-items: center;
+}
+
+.fourier-widget-formula {
+    min-height: 1.6em;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    color: var(--text-color);
+}
+
+.fourier-widget-error {
+    color: var(--muted-text-color);
+    font-size: 0.82rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.fourier-widget-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(160px, 0.8fr);
+    gap: 12px;
+    align-items: center;
+}
+
+.fourier-widget-waveforms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.fourier-widget-waveform,
+.fourier-widget-check {
+    min-height: 38px;
+    border: 1px solid var(--border-color-strong);
+    background: #ffffff;
+    color: var(--text-color);
+}
+
+.fourier-widget-waveform {
+    flex: 1 1 96px;
+    padding: 0 12px;
+    border-radius: var(--button-radius);
+}
+
+.fourier-widget-waveform:hover,
+.fourier-widget-waveform.is-selected {
+    border-color: var(--progress-color);
+    background: #f7fbff;
+}
+
+.fourier-widget-term-control {
+    display: grid;
+    grid-template-columns: auto minmax(80px, 1fr) 2.5rem;
+    gap: 10px;
+    align-items: center;
+}
+
+.fourier-widget-term-label {
+    color: var(--text-color);
+}
+
+.fourier-widget-term-value {
+    color: var(--muted-text-color);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.fourier-widget-slider {
+    width: 100%;
+    accent-color: var(--progress-color);
+}
+
+.fourier-widget-plot {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    width: 100%;
+    min-height: 220px;
+    overflow: hidden;
+}
+
+.fourier-widget-plot svg {
+    width: 100%;
+    height: 100%;
+}
+
+.fourier-widget-midline {
+    stroke: var(--border-color);
+    stroke-width: 0.75;
+    stroke-dasharray: 2 2;
+    vector-effect: non-scaling-stroke;
+}
+
+.fourier-widget-target {
+    fill: none;
+    stroke: #777777;
+    stroke-width: 1.2;
+    stroke-dasharray: 3 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+}
+
+.fourier-widget-sum {
+    fill: none;
+    stroke: var(--progress-color);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+}
+
+.fourier-widget-axis {
+    position: absolute;
+    bottom: 4px;
+    color: var(--muted-text-color);
+    font-size: 0.76rem;
+    line-height: 1;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.fourier-widget-axis-left {
+    left: 8%;
+}
+
+.fourier-widget-axis-center {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.fourier-widget-axis-right {
+    right: 8%;
+}
+
+.fourier-widget-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    color: var(--muted-text-color);
+    font-size: 0.82rem;
+}
+
+.fourier-widget-legend span {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.fourier-widget-key {
+    display: inline-block;
+    width: 20px;
+    height: 0;
+    border-top: 2px solid currentColor;
+}
+
+.fourier-widget-key-target {
+    color: #777777;
+    border-top-style: dashed;
+}
+
+.fourier-widget-key-sum {
+    color: var(--progress-color);
+}
+
+.fourier-widget-output {
+    color: var(--muted-text-color);
+    text-align: center;
+}
+
+.fourier-widget-check {
+    justify-self: center;
+    min-width: 120px;
+    padding: 0 18px;
+    border-radius: 999px;
+}
+
+        grid-template-columns: 1fr;
+    }
+
+    .fourier-widget-term-control {
+        grid-template-columns: auto minmax(0, 1fr) 2.5rem;
+    }
+
+    .fourier-widget-plot {
+        min-height: 180px;
+    }
+

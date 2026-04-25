@@ -1,0 +1,100 @@
+/* 1. Use a more-intuitive box-sizing model */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* 2. Remove default margin */
+*:not(dialog) {
+  margin: 0;
+}
+
+/* 3. Enable keyword animations */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    interpolate-size: allow-keywords;
+  }
+}
+
+body {
+  /* 4. Increase line-height */
+  line-height: 1.5;
+  /* 5. Improve text rendering */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 6. Improve media defaults */
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* 7. Inherit fonts for form controls */
+input, button, textarea, select {
+  font: inherit;
+}
+
+/* 8. Avoid text overflows */
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+
+/* 9. Improve line wrapping */
+p {
+  text-wrap: pretty;
+}
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+}
+
+/*
+  10. Create a root stacking context
+*/
+#root, #__next {
+  isolation: isolate;
+}
+
+
+
+:root {
+    --interactive-width: 70%;
+    --progress-node-size: 12px;
+    --page-bg: #ffffff;
+    --surface-bg: #ffffff;
+    --text-color: #1f1f1f;
+    --muted-text-color: #666666;
+    --link-color: #0b57d0;
+    --border-color: #d7d7d7;
+    --border-color-strong: #b7b7b7;
+    --shadow-color: rgba(31, 31, 31, 0.08);
+    --button-bg: #1e1e1e;
+    --button-face-bg: #3f3f3f;
+    --button-text: #ffffff;
+    --button-radius: 8px;
+    --success-color: #0a6c2f;
+    --error-color: #9a1b1b;
+    --progress-color: #0884d7;
+    --progress-color-soft: rgba(8, 132, 215, 0.234);
+}
+
+html,
+body,
+#app {
+    height: 100dvh;
+}
+
+body {
+    font-family: Verdana, sans-serif;
+    font-size: 0.9em;
+    letter-spacing: 0.04em;
+    line-height: 1.6;
+    background: var(--page-bg);
+    color: var(--text-color);
+}
+
+a {
+    color: var(--link-color);
+}
+
+button {
+    cursor: pointer;
+}
