@@ -194,6 +194,8 @@
     border-radius: 999px;
 }
 
+@media (max-width: 700px) {
+    .dft-widget-plot-header {
         display: grid;
         gap: 2px;
     }
@@ -205,3 +207,4 @@
     .dft-widget-svg {
         height: 130px;
     }
+}

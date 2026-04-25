@@ -1,10 +1,4 @@
-function clamp(value, min, max) {
-    return Math.min(Math.max(value, min), max);
-}
-
-function formatNumber(value, digits = 2) {
-    return Number(value).toFixed(digits);
-}
+import { clamp, createSvgElement, formatNumber, setLine } from "./shared.js";
 
 function getSampleCount(params) {
     return Number.isInteger(params.sampleCount) ? clamp(params.sampleCount, 4, 16) : 8;
@@ -99,7 +93,6 @@ const PRESETS = [
     ["pulse", "Pulse"]
 ];
 
-const SVG_NS = "http://www.w3.org/2000/svg";
 const VIEWBOX_WIDTH = 272;
 const VIEWBOX_HEIGHT = 64;
 const PLOT_LEFT = 16;
@@ -108,16 +101,6 @@ const TIME_ZERO_Y = 32;
 const FREQ_BASELINE_Y = 54;
 const TOP_Y = 8;
 const BOTTOM_Y = 56;
-
-function createSvgElement(tagName, className) {
-    const element = document.createElementNS(SVG_NS, tagName);
-
-    if (className) {
-        element.setAttribute("class", className);
-    }
-
-    return element;
-}
 
 function getPlotX(index, count) {
     if (count <= 1) {
@@ -140,13 +123,6 @@ function timeYToValue(y, maxAmplitude) {
 function magnitudeToY(value, maxValue) {
     const normalized = maxValue > 0 ? clamp(value / maxValue, 0, 1) : 0;
     return FREQ_BASELINE_Y - (normalized * (FREQ_BASELINE_Y - TOP_Y));
-}
-
-function setLine(line, x1, y1, x2, y2) {
-    line.setAttribute("x1", String(x1));
-    line.setAttribute("y1", String(y1));
-    line.setAttribute("x2", String(x2));
-    line.setAttribute("y2", String(y2));
 }
 
 export function createWidget(container, params, api = {}) {

@@ -1,33 +1,4 @@
-function clamp(value, min, max) {
-    return Math.min(Math.max(value, min), max);
-}
-
-function formatNumber(value, digits = 3) {
-    return Number(value).toFixed(digits);
-}
-
-function getKatexRenderer() {
-    return window.katex && typeof window.katex.render === "function"
-        ? window.katex.render
-        : null;
-}
-
-function renderKatex(element, expression) {
-    const katexRender = getKatexRenderer();
-
-    if (!element) {
-        return;
-    }
-
-    if (!katexRender) {
-        element.textContent = expression;
-        return;
-    }
-
-    katexRender(expression, element, {
-        throwOnError: false
-    });
-}
+import { clamp, formatNumber, renderKatex } from "./shared.js";
 
 function getDomain(params) {
     return Array.isArray(params.domain) ? params.domain : [0, 0.999];

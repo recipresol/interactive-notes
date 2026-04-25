@@ -1,5 +1,6 @@
 @import url("./base.css");
 @import url("./components.css");
+@import url("./widgets/shared.css");
 @import url("./widgets/function-sequence.css");
 @import url("./widgets/fourier-series.css");
 @import url("./widgets/dft.css");

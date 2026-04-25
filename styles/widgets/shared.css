@@ -1,0 +1,41 @@
+.sequence-widget-output,
+.fourier-widget-output,
+.dft-widget-output,
+.attention-output,
+.convolution-output,
+.gradient-output {
+    color: var(--muted-text-color);
+    text-align: center;
+}
+
+.sequence-widget-check,
+.fourier-widget-check,
+.dft-widget-check,
+.attention-check,
+.convolution-check,
+.gradient-check {
+    justify-self: center;
+    min-width: 96px;
+    min-height: 34px;
+    padding: 0 16px;
+    border: 1px solid var(--border-color-strong);
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--text-color);
+}
+
+.sequence-widget-slider,
+.fourier-widget-slider,
+.dft-widget-keep-slider,
+.gradient-control input {
+    accent-color: var(--progress-color);
+}
+
+.sequence-widget-control-value,
+.fourier-widget-term-value,
+.dft-widget-keep-value,
+.gradient-control-value {
+    color: var(--muted-text-color);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}

@@ -258,17 +258,19 @@
     color: var(--text-color);
 }
 
-.attention-row {
-    grid-template-columns: minmax(22px, 0.8fr) minmax(0, 4.8fr) minmax(22px, 0.4fr);
-    gap: 2px;
-}
+@media (max-width: 700px) {
+    .attention-row {
+        grid-template-columns: minmax(22px, 0.8fr) minmax(0, 4.8fr) minmax(22px, 0.4fr);
+        gap: 2px;
+    }
 
-.attention-row-cells {
-    grid-template-columns: repeat(var(--attention-count), minmax(22px, 0.8fr));
-    gap: 2px;
-}
+    .attention-row-cells {
+        grid-template-columns: repeat(var(--attention-count), minmax(22px, 0.8fr));
+        gap: 2px;
+    }
 
-.attention-attention-cell {
-    min-height: 22px;
-    font-size: 0.55rem;
+    .attention-attention-cell {
+        min-height: 22px;
+        font-size: 0.55rem;
+    }
 }

@@ -1,33 +1,5 @@
-function clamp(value, min, max) {
-    return Math.min(Math.max(value, min), max);
-}
+import { clamp, createSvgElement, formatNumber, renderKatex } from "./shared.js";
 
-function formatNumber(value, digits = 2) {
-    return Number(value).toFixed(digits);
-}
-
-function getKatexRenderer() {
-    return window.katex && typeof window.katex.render === "function"
-        ? window.katex.render
-        : null;
-}
-
-function renderKatex(element, expression) {
-    const katexRender = getKatexRenderer();
-
-    if (!element) {
-        return;
-    }
-
-    if (!katexRender) {
-        element.textContent = expression;
-        return;
-    }
-
-    katexRender(expression, element, { throwOnError: false });
-}
-
-const SVG_NS = "http://www.w3.org/2000/svg";
 const VIEWBOX_SIZE = 100;
 const PLOT_MIN = 8;
 const PLOT_MAX = 92;
@@ -39,16 +11,6 @@ const OBJECTIVE = {
     b: 0.55,
     c: 0.34
 };
-
-function createSvgElement(tagName, className) {
-    const element = document.createElementNS(SVG_NS, tagName);
-
-    if (className) {
-        element.setAttribute("class", className);
-    }
-
-    return element;
-}
 
 function toSvgPoint(point) {
     const [x, y] = point;

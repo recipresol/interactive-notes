@@ -146,6 +146,7 @@
     color: var(--text-color);
 }
 
+@media (max-width: 700px) {
     .sequence-widget-body {
         grid-template-columns: 1fr;
         align-items: stretch;
@@ -171,4 +172,4 @@
         writing-mode: horizontal-tb;
         direction: ltr;
     }
-
+}

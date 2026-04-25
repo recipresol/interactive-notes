@@ -1,35 +1,15 @@
-function clamp(value, min, max) {
-    return Math.min(Math.max(value, min), max);
-}
-
-function formatNumber(value, digits = 2) {
-    return Number(value).toFixed(digits);
-}
-
-function dot(a, b) {
-    return (a[0] * b[0]) + (a[1] * b[1]);
-}
-
-function addScaled(sum, vector, scale) {
-    return [
-        sum[0] + (vector[0] * scale),
-        sum[1] + (vector[1] * scale)
-    ];
-}
-
-function applyMatrix(matrix, vector) {
-    return [
-        (matrix[0][0] * vector[0]) + (matrix[0][1] * vector[1]),
-        (matrix[1][0] * vector[0]) + (matrix[1][1] * vector[1])
-    ];
-}
-
-function softmax(values) {
-    const maxValue = Math.max(...values);
-    const exponentials = values.map((value) => Math.exp(value - maxValue));
-    const total = exponentials.reduce((sum, value) => sum + value, 0);
-    return exponentials.map((value) => value / total);
-}
+import {
+    addScaled,
+    applyMatrix,
+    clamp,
+    cloneMatrix,
+    createSvgElement,
+    dot,
+    formatNumber,
+    renderKatex,
+    setLine,
+    softmax
+} from "./shared.js";
 
 function getTokens(params) {
     if (Array.isArray(params.tokens) && params.tokens.length > 0) {
@@ -47,51 +27,10 @@ function getTokens(params) {
     ];
 }
 
-function getKatexRenderer() {
-    return window.katex && typeof window.katex.render === "function"
-        ? window.katex.render
-        : null;
-}
-
-function renderKatex(element, expression) {
-    const katexRender = getKatexRenderer();
-
-    if (!element) {
-        return;
-    }
-
-    if (!katexRender) {
-        element.textContent = expression;
-        return;
-    }
-
-    katexRender(expression, element, {
-        throwOnError: false
-    });
-}
-
-const SVG_NS = "http://www.w3.org/2000/svg";
 const BOX_VIEWBOX = 64;
 const BOX_SCALE = 20;
 const MATRIX_SCALE = 20;
 const MATRIX_NAMES = ["Q", "K", "V"];
-
-function createSvgElement(tagName, className) {
-    const element = document.createElementNS(SVG_NS, tagName);
-
-    if (className) {
-        element.setAttribute("class", className);
-    }
-
-    return element;
-}
-
-function setLine(line, x1, y1, x2, y2) {
-    line.setAttribute("x1", String(x1));
-    line.setAttribute("y1", String(y1));
-    line.setAttribute("x2", String(x2));
-    line.setAttribute("y2", String(y2));
-}
 
 function toBoxPoint(vector, scale = BOX_SCALE) {
     return [
@@ -114,10 +53,6 @@ function matrixColumn(matrix, columnIndex) {
 function setMatrixColumn(matrix, columnIndex, vector) {
     matrix[0][columnIndex] = vector[0];
     matrix[1][columnIndex] = vector[1];
-}
-
-function cloneMatrix(matrix) {
-    return matrix.map((row) => [...row]);
 }
 
 function sanitizeMatrix(nextMatrix, fallback) {

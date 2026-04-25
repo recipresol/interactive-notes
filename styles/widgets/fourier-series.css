@@ -183,6 +183,8 @@
     border-radius: 999px;
 }
 
+@media (max-width: 700px) {
+    .fourier-widget-controls {
         grid-template-columns: 1fr;
     }
 
@@ -193,4 +195,4 @@
     .fourier-widget-plot {
         min-height: 180px;
     }
-
+}

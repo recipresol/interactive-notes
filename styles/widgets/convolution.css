@@ -171,7 +171,7 @@
     color: var(--text-color);
 }
 
-
+@media (max-width: 700px) {
     .convolution-row {
         grid-template-columns: minmax(0, 1fr) minmax(48px, 0.2fr);
         gap: 4px;
@@ -184,3 +184,5 @@
 
     .convolution-cell {
         font-size: 0.55rem;
+    }
+}
