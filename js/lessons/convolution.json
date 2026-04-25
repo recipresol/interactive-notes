@@ -1,0 +1,58 @@
+{
+  "id": "convolution",
+  "title": "Convolution: Sliding Weighted Sums",
+  "steps": [
+    {
+      "id": "intro",
+      "type": "text",
+      "title": "A local weighted sum",
+      "body": "Discrete convolution builds each output sample by sliding a small kernel across the input signal, multiplying overlapping entries, and summing the products."
+    },
+    {
+      "id": "kernel-flip",
+      "type": "multiple_choice",
+      "title": "The index rule",
+      "prompt": "For $y[n]=\\sum_k x[k]h[n-k]$, which input samples affect $y[n]$?",
+      "choices": [
+        "Only samples where the shifted kernel overlaps the signal.",
+        "Every sample equally, no matter where the kernel is.",
+        "Only the largest input sample."
+      ],
+      "answer": 0,
+      "explanations": [
+        "Correct. The kernel selects a local neighborhood and weights those samples.",
+        "No. The kernel has local support in this toy example.",
+        "No. Convolution is a weighted sum, not a max operation."
+      ]
+    },
+    {
+      "id": "explore",
+      "type": "widget",
+      "title": "Slide the kernel",
+      "prompt": "",
+      "widget": "convolutionExplorer",
+      "params": {
+        "signal": [0.1, 0.75, 1, 0.35, -0.25, 0.55, 0.25, 0],
+        "kernel": [0.25, 0.5, 0.25],
+        "initialIndex": 3
+      }
+    },
+    {
+      "id": "smoothing",
+      "type": "multiple_choice",
+      "title": "Smoothing",
+      "prompt": "What does the kernel $[0.25,0.5,0.25]$ tend to do?",
+      "choices": [
+        "It averages nearby values, so sharp changes are softened.",
+        "It keeps only negative values.",
+        "It reverses time without changing amplitudes."
+      ],
+      "answer": 0,
+      "explanations": [
+        "Correct. It is a small smoothing kernel.",
+        "No. Positive weights do not isolate negative values.",
+        "Not here. The output is a local weighted sum."
+      ]
+    }
+  ]
+}

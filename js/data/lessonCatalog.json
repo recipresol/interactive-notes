@@ -19,6 +19,16 @@
       "id": "transformer-attention",
       "title": "Transformer Attention: One Toy Head",
       "description": "Drag Q, K, and V basis vectors to see scores, softmax weights, and value mixing."
+    },
+    {
+      "id": "convolution",
+      "title": "Convolution: Sliding Weighted Sums",
+      "description": "Slide a small kernel across a signal and watch local products accumulate."
+    },
+    {
+      "id": "gradient-descent",
+      "title": "Gradient Descent: Following the Slope",
+      "description": "Drag a starting point on a contour plot and watch iterative updates descend."
     }
   ]
 }

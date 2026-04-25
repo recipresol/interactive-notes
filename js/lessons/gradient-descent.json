@@ -1,0 +1,58 @@
+{
+  "id": "gradient-descent",
+  "title": "Gradient Descent: Following the Slope",
+  "steps": [
+    {
+      "id": "intro",
+      "type": "text",
+      "title": "Move against the gradient",
+      "body": "Gradient descent starts at a point, looks at the gradient of a function there, and takes a step in the opposite direction. Repeating this can move the point toward a minimum."
+    },
+    {
+      "id": "direction",
+      "type": "multiple_choice",
+      "title": "Direction",
+      "prompt": "If $\\nabla f(x)$ points uphill, which direction does gradient descent step?",
+      "choices": [
+        "In the direction $-\\nabla f(x)$.",
+        "In the direction $\\nabla f(x)$.",
+        "Perpendicular to the gradient every time."
+      ],
+      "answer": 0,
+      "explanations": [
+        "Correct. The negative gradient points in the direction of steepest local decrease.",
+        "That would move uphill for a small positive step.",
+        "No. Perpendicular motion keeps the first-order value nearly unchanged."
+      ]
+    },
+    {
+      "id": "explore",
+      "type": "widget",
+      "title": "Tune the step",
+      "prompt": "",
+      "widget": "gradientDescentExplorer",
+      "params": {
+        "initialPoint": [-1.7, 1.15],
+        "initialStepSize": 0.18,
+        "iterations": 14
+      }
+    },
+    {
+      "id": "step-size",
+      "type": "multiple_choice",
+      "title": "Step size",
+      "prompt": "What can happen when the learning rate is too large?",
+      "choices": [
+        "The iterates can overshoot or zig-zag instead of settling down.",
+        "The gradient becomes exactly zero everywhere.",
+        "The contour lines disappear."
+      ],
+      "answer": 0,
+      "explanations": [
+        "Correct. Big steps can bounce across the valley or diverge.",
+        "No. The learning rate changes the update, not the function itself.",
+        "No. The contour plot still describes the same objective."
+      ]
+    }
+  ]
+}
